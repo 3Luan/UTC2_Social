@@ -67,6 +67,26 @@ let login = async (req, res) => {
   }
 };
 
+let logout = async (req, res) => {
+  try {
+    // Xóa cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    sendResponse(res, 200, "Đăng xuất thành công");
+  } catch (error) {
+    sendResponse(
+      res,
+      error?.status || 500,
+      error.message || "Internal Server Error"
+    );
+  }
+};
+
 module.exports = {
   login,
+  logout,
 };
