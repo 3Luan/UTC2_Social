@@ -6,7 +6,6 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 const cors = require("cors");
-require("./src/config/passport");
 const path = require("path"); // Để xử lý đường dẫn tệp
 
 // Cấu hình các tệp tĩnh từ thư mục uploads
