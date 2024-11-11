@@ -22,7 +22,7 @@ const checkJWT = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET, async (error, resutl) => {
     if (error) {
       if (!token) {
-        sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
+        return sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
       }
     }
 
@@ -37,13 +37,13 @@ const checkAdminJWT = (req, res, next) => {
 
   if (!token) {
     if (!token) {
-      sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
+      return sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
     }
   }
   jwt.verify(token, process.env.JWT_SECRET, async (error, resutl) => {
     if (error) {
       if (!token) {
-        sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
+        return sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
       }
     }
 
