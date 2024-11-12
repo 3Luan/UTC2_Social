@@ -18,12 +18,12 @@ const checkUserBanned = async (req, res, next) => {
   next();
 };
 
-const checkUserVerified = async (req, res, next) => {
+const checkUserIsAdmin = async (req, res, next) => {
   const userId = req.userId;
 
-  const user = await userModel.findOne({ userId });
+  const user = await userModel.findById(userId);
 
-  if (!user.verified) {
+  if (!user.isAdmin) {
     return sendResponse(res, 403, "Bạn không thể thực hiện thao tác này");
   }
 
@@ -32,5 +32,5 @@ const checkUserVerified = async (req, res, next) => {
 
 module.exports = {
   checkUserBanned,
-  checkUserVerified,
+  checkUserIsAdmin,
 };
