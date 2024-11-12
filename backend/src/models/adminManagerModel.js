@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
-const adminSchema = new mongoose.Schema(
+const adminManagerSchema = new mongoose.Schema(
   {
     _id: {
       type: String,
@@ -14,6 +14,6 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Admin = mongoose.model("admin", adminSchema);
+const AdminManager = mongoose.model("adminmanager", adminManagerSchema);
 
-module.exports = Admin;
+module.exports = AdminManager;
