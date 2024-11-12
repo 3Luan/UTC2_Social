@@ -5,6 +5,8 @@ const chatRoute = require("./chatRoute");
 const messageRoutes = require("./messageRoute");
 const postRoute = require("./postRoute");
 
+const adminManagerRoute = require("./adminManagerRoute");
+
 let initRoutes = (app) => {
   app.use("/api/user", userRoute);
   app.use("/api/auth", authRoute);
@@ -12,6 +14,8 @@ let initRoutes = (app) => {
   app.use("/api/message", messageRoutes);
   app.use("/api/post", postRoute);
 
+  // Admin
+  app.use("/api/adminManager", adminManagerRoute);
   return app;
 };
 
