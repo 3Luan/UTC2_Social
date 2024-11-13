@@ -252,10 +252,52 @@ let deleteComment = async (req, res) => {
   }
 };
 
+let getDeleteComments = async (req, res) => {
+  try {
+    const currentPage = req.params.currentPage || 1;
+
+    let comments, count;
+
+    // Count the deleted comments
+    count = await commentModel.countDocuments({
+      isDelete: true,
+    });
+
+    const offset = 10 * (currentPage - 1);
+
+    // Get deleted comments with pagination
+    comments = await commentModel
+      .find({ isDelete: true })
+      .limit(10)
+      .skip(offset)
+      .populate("user", "name pic")
+      .sort({ createdAt: -1 });
+
+    if (!comments || comments.length === 0) {
+      return res.status(404).json({
+        message: "Không có bình luận, phản hồi đã xóa nào",
+      });
+    }
+
+    res.status(200).json({
+      message: "Lấy bình luận, phản hồi đã xóa thành công",
+      count: count,
+      data: comments,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message || "Lỗi: getDeleteComments",
+    });
+  }
+};
+
 module.exports = {
   createComment,
   createReply,
   getReplyByCommentId,
   deleteComment,
   getCommentByPostId,
+  ///////////Admin Manager////////////
+  getDeleteComments,
 };

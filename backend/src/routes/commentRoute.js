@@ -35,4 +35,11 @@ router.post(
   commentController.deleteComment
 );
 
+//Admin Manager
+router.get(
+  "/getDeleteComments/:currentPage",
+  checkAdminJWT,
+  commentController.getDeleteComments
+);
+
 module.exports = router;

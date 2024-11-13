@@ -360,6 +360,399 @@ let getFollowings = async (req, res) => {
   }
 };
 
+//////////////////////// Admin Manager //////////////////////
+// Lấy danh sách Người kiểm duyệt
+let getAllAdminUsers = async (req, res) => {
+  try {
+    const currentPage = parseInt(req.params.currentPage) || 1;
+    const keyword = req.params.keyword || null;
+
+    // Set up search criteria based on keyword presence
+    const searchCriteria = {
+      isAdmin: true,
+      isBan: false,
+    };
+
+    if (keyword) {
+      const regex = new RegExp(keyword, "i");
+      searchCriteria.name = regex;
+    }
+
+    // Count admins matching the search criteria
+    const count = await User.countDocuments(searchCriteria);
+
+    const offset = 12 * (currentPage - 1);
+
+    // Retrieve admins matching the search criteria with pagination and sorting
+    const users = await User.find(searchCriteria)
+      .limit(12)
+      .skip(offset)
+      .sort({ createdAt: -1 });
+
+    // If no admins are found, return a 404 response
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        message: "Không có data nào",
+      });
+    }
+
+    res.status(200).json({
+      message: "Tìm kiếm thành công",
+      count: count,
+      data: users,
+    });
+  } catch (error) {
+    console.log(error);
+    // Return the error with the appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Lỗi: searchAdminRole",
+    });
+  }
+};
+
+// Lấy tất cả user không phải là Người kiểm duyệt
+let getAllNonAdminUsers = async (req, res) => {
+  try {
+    const currentPage = parseInt(req.params.currentPage) || 1;
+    const keyword = req.params.keyword || null;
+
+    // Set up search criteria based on keyword presence
+    const searchCriteria = {
+      isAdmin: false,
+      isBan: false,
+    };
+
+    if (keyword) {
+      const regex = new RegExp(keyword, "i");
+      searchCriteria.name = regex;
+    }
+
+    // Count users matching the search criteria
+    const count = await User.countDocuments(searchCriteria);
+
+    const offset = 12 * (currentPage - 1);
+
+    // Retrieve users matching the search criteria with pagination and sorting
+    const users = await User.find(searchCriteria)
+      .limit(12)
+      .skip(offset)
+      .sort({ createdAt: -1 });
+
+    // If no users are found, return a 404 response
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        message: "Không có data nào",
+      });
+    }
+
+    res.status(200).json({
+      message: "Tìm kiếm thành công",
+      count: count,
+      data: users,
+    });
+  } catch (error) {
+    console.log(error);
+    // Return the error with the appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Lỗi: getAllNonAdminUsers",
+    });
+  }
+};
+
+// Cấp quyền admin cho user
+let grantAdminRole = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    // Verify if the user exists and is not banned
+    const user = await User.findById(userId);
+    if (!user || user.isBan) {
+      return res.status(404).json({
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    // Check if the user is already an admin
+    if (user.isAdmin) {
+      return res.status(400).json({
+        code: 1,
+        message: "Người dùng đã là Người kiểm duyệt",
+      });
+    }
+
+    // Grant admin role to the user
+    user.isAdmin = true;
+    await user.save();
+
+    res.status(200).json({
+      message: "Cấp quyền Người kiểm duyệt cho user thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    // Return the error with appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Đã có lỗi xảy ra: grantAdminRole",
+    });
+  }
+};
+
+// Xóa quyền admin cho user
+let revokeAdminRole = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    // Verify if the user exists and is not banned
+    const user = await User.findById(userId);
+    if (!user || user.isBan) {
+      return res.status(404).json({
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    // Check if the user is an admin
+    if (!user.isAdmin) {
+      return res.status(400).json({
+        message: "Người dùng không phải là Người kiểm duyệt",
+      });
+    }
+
+    // Revoke admin role from the user
+    user.isAdmin = false;
+    await user.save();
+
+    res.status(200).json({
+      message: "Xóa quyền Người kiểm duyệt cho user thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    // Return the error with the appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Đã có lỗi xảy ra: revokeAdminRole",
+    });
+  }
+};
+
+// Thống kê số lượng user
+let getUserStatistics = async (req, res) => {
+  try {
+    // Count the total number of users
+    const count = await User.countDocuments();
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      count: count,
+    });
+  } catch (error) {
+    console.error(error);
+
+    // Return the error with appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Lỗi: getUserStatistics",
+    });
+  }
+};
+
+// Thống kê số lượng user bị cấm
+let getUserIsBanStatistics = async (req, res) => {
+  try {
+    // Query for users who are banned
+    let query = {
+      isBan: true,
+    };
+
+    // Count the number of banned users
+    const count = await User.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      count: count,
+    });
+  } catch (error) {
+    console.error(error);
+    // Return the error with appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Lỗi: getUserIsBanStatistics",
+    });
+  }
+};
+
+// Thống kê số lượng user không bị cấm
+let getUserNotBanStatistics = async (req, res) => {
+  try {
+    // Query for users who are not banned
+    let query = {
+      isBan: false,
+    };
+
+    // Count the number of users not banned
+    const count = await User.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      count: count,
+    });
+  } catch (error) {
+    console.error(error);
+    // Return the error with appropriate status code
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Lỗi: getUserNotBanStatistics",
+    });
+  }
+};
+
+// Khóa tài khoản user
+let banUser = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    // Find the user to be banned
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    // If the user is already banned, return a message
+    if (user.isBan) {
+      return res.status(400).json({
+        message: "Tài khoản này đã bị khóa trước đó",
+      });
+    }
+
+    // Ban the user
+    user.isBan = true;
+    await user.save();
+
+    res.status(200).json({
+      message: "Khóa tài khoản thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message || "Đã có lỗi xảy ra: banUser",
+    });
+  }
+};
+
+// Mở khóa tài khoản user
+let unbanUser = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    // Find the user to unban
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    // If the user is not banned, return a message
+    if (!user.isBan) {
+      return res.status(400).json({
+        message: "Tài khoản này vẫn còn hoạt động",
+      });
+    }
+
+    // Unban the user
+    user.isBan = false;
+    await user.save();
+
+    res.status(200).json({
+      message: "Mở khóa tài khoản thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message || "Đã có lỗi xảy ra: unBanUser",
+    });
+  }
+};
+
+let getBanUser = async (req, res) => {
+  try {
+    const currentPage = req.params.currentPage || 1;
+    const keyword = req.params.keyword || null;
+
+    // If keyword is provided, search by it
+    let query = { isBan: true };
+
+    if (keyword) {
+      const regex = new RegExp(keyword, "i");
+      query.name = regex;
+    }
+
+    const count = await User.countDocuments(query);
+
+    const offset = 12 * (currentPage - 1);
+
+    const users = await User.find(query)
+      .limit(12)
+      .skip(offset)
+      .sort({ createdAt: -1 });
+
+    // Check if users were found
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        message: "Không có người dùng bị khóa phù hợp",
+      });
+    }
+
+    res.status(200).json({
+      message: "Tìm kiếm thành công",
+      count: count,
+      data: users,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message || "Lỗi: getBanUser",
+    });
+  }
+};
+
+// Thống kê người dùng mới theo ngày, tháng, năm
+let getNewUserStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isBan: false,
+    };
+
+    // Filter by specific day, month, or year
+    if (day !== "null" && month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1); // For one day interval
+      query.createdAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.createdAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.createdAt = { $gte: startDate, $lt: endDate };
+    }
+
+    // Count the new users matching the query
+    const count = await User.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê người dùng mới thành công",
+      count: count,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message || "Lỗi: getNewUserStatistics",
+    });
+  }
+};
+
 module.exports = {
   getUsers,
   followUser,
@@ -369,4 +762,16 @@ module.exports = {
   getFollowers,
   getUserInfoById,
   updateProfile,
+  ///// admin ////
+  getAllAdminUsers,
+  getAllNonAdminUsers,
+  grantAdminRole,
+  revokeAdminRole,
+  getUserStatistics,
+  getUserIsBanStatistics,
+  getUserNotBanStatistics,
+  banUser,
+  unbanUser,
+  getBanUser,
+  getNewUserStatistics,
 };
