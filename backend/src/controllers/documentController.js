@@ -757,6 +757,200 @@ let unSaveDocument = async (req, res) => {
   }
 };
 
+/////////////////////////// ADMIN MANAGER ///////////////////////////
+
+let getDeleteDocuments = async (req, res) => {
+  try {
+    const currentPage = req.params.currentPage || 1;
+
+    let documents, count;
+
+    count = await postModel.countDocuments({
+      isDelete: true,
+      isDoc: true,
+    });
+
+    const offset = 10 * (currentPage - 1);
+
+    documents = await postModel
+      .find({ isDelete: true, isDoc: true })
+      .limit(10)
+      .skip(offset)
+      .populate("user", "name pic")
+      .select("_id title createdAt updatedAt likes")
+      .sort({ createdAt: -1 });
+
+    if (!documents || documents.length === 0) {
+      throw {
+        status: 404,
+        message: "Không có tài liệu đã xóa nào",
+      };
+    }
+
+    res.status(200).json({
+      message: "Lấy tài liệu đã xóa thành công",
+      data: {
+        count,
+        documents,
+      },
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getDocumentStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isDelete: false,
+      isDoc: true,
+    };
+
+    if (day !== "null" && month && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    }
+
+    const count = await postModel.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      data: count,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getUnapprovedDocumentStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isDelete: false,
+      isDoc: true,
+      isDisplay: false,
+    };
+
+    if (day !== "null" && month && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    }
+
+    const count = await postModel.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      data: count,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getApprovedDocumentStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isDelete: false,
+      isDoc: true,
+      isDisplay: true,
+    };
+
+    if (day !== "null" && month && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    }
+
+    const count = await postModel.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      data: count,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getDocumentDeleteDetailById = async (req, res) => {
+  try {
+    const documentId = req.params.documentId;
+
+    const documentDetail = await postModel
+      .findById(documentId)
+      .select("-comments")
+      .populate("user", "name pic");
+
+    if (!documentDetail || !documentDetail.isDoc) {
+      throw {
+        status: 404,
+        message: "Không tìm thấy tài liệu",
+      };
+    }
+
+    if (!documentDetail.isDelete) {
+      throw {
+        status: 404,
+        message: "Tài liệu chưa được xóa",
+      };
+    }
+
+    res.status(200).json({
+      message: "Lấy thông tin tài liệu thành công",
+      data: documentDetail,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   createDocument,
   deleteDocument,
@@ -774,4 +968,12 @@ module.exports = {
   approvedDocument,
   saveDocument,
   unSaveDocument,
+
+  /////////////////////////// ADMIN MANAGER ///////////////////////////
+
+  getDeleteDocuments,
+  getDocumentStatistics,
+  getUnapprovedDocumentStatistics,
+  getApprovedDocumentStatistics,
+  getDocumentDeleteDetailById,
 };

@@ -116,4 +116,36 @@ router.get(
   documentController.getSavedDocuments
 );
 
+/////////////////////////// ADMIN MANAGER ///////////////////////////
+
+router.get(
+  "/getDeleteDocuments/:currentPage",
+  checkAdminJWT,
+  documentController.getDeleteDocuments
+);
+
+router.get(
+  "/getDocumentStatistics/:day/:month/:year",
+  checkAdminJWT,
+  documentController.getDocumentStatistics
+);
+
+router.get(
+  "/getUnapprovedDocumentStatistics/:day/:month/:year",
+  checkAdminJWT,
+  documentController.getUnapprovedDocumentStatistics
+);
+
+router.get(
+  "/getApprovedDocumentStatistics/:day/:month/:year",
+  checkAdminJWT,
+  documentController.getApprovedDocumentStatistics
+);
+
+router.get(
+  "/getDocumentDeleteDetailById/:documentId",
+  checkAdminJWT,
+  documentController.getDocumentDeleteDetailById
+);
+
 module.exports = router;
