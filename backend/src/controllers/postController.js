@@ -6,7 +6,6 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const fileUploadPath = path.join("uploads/files");
 const imageUploadPath = path.join("uploads/images");
-const adminManagerModel = require("../models/adminManagerModel");
 
 let createPost = async (req, res) => {
   try {
@@ -884,6 +883,200 @@ let getSavedPostId = async (req, res) => {
   }
 };
 
+/////////////////////////// ADMIN MANAGER ///////////////////////////
+
+let getDeletePosts = async (req, res) => {
+  try {
+    const currentPage = req.params.currentPage || 1;
+
+    let posts, count;
+
+    count = await postModel.countDocuments({
+      isDelete: true,
+      isDoc: false,
+    });
+
+    const offset = 10 * (currentPage - 1);
+
+    posts = await postModel
+      .find({ isDelete: true, isDoc: false })
+      .limit(10)
+      .skip(offset)
+      .populate("user", "name pic")
+      .select("_id title createdAt updatedAt likes")
+      .sort({ createdAt: -1 });
+
+    if (!posts || posts.length === 0) {
+      throw {
+        status: 404,
+        message: "Không có bài viết nào",
+      };
+    }
+
+    res.status(200).json({
+      message: "Lấy bài viết thành công",
+      data: {
+        count,
+        posts,
+      },
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getPostsStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isDelete: false,
+      isDoc: false,
+    };
+
+    if (day !== "null" && month && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    }
+
+    const count = await postModel.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      data: count,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getUnapprovedPostsStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isDisplay: false,
+      isDelete: false,
+      isDoc: false,
+    };
+
+    if (day !== "null" && month && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    }
+
+    const count = await postModel.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      data: count,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getapprovedPostsStatistics = async (req, res) => {
+  try {
+    const { day, month, year } = req.params;
+
+    let query = {
+      isDisplay: true,
+      isDelete: false,
+      isDoc: false,
+    };
+
+    if (day !== "null" && month && year) {
+      const startDate = new Date(`${year}-${month}-${day}`);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (month !== "null" && year) {
+      const startDate = new Date(`${year}-${month}-01`);
+      const nextMonth = parseInt(month) + 1;
+      const endDate = new Date(`${year}-${nextMonth}-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    } else if (year) {
+      const startDate = new Date(`${year}-01-01`);
+      const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      query.updatedAt = { $gte: startDate, $lt: endDate };
+    }
+
+    const count = await postModel.countDocuments(query);
+
+    res.status(200).json({
+      message: "Thống kê thành công",
+      data: count,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
+let getPostDeleteDetailById = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+
+    const postDetail = await postModel
+      .findById(postId)
+      .select("-comments")
+      .populate("user", "name pic");
+
+    if (!postDetail || postDetail.isDoc) {
+      throw {
+        status: 404,
+        message: "Không tìm thấy bài viết",
+      };
+    }
+
+    if (!postDetail.isDelete) {
+      throw {
+        status: 404,
+        message: "Bài viết chưa được xóa",
+      };
+    }
+
+    res.status(200).json({
+      message: "Lấy thông tin bài viết thành công",
+      data: postDetail,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).json({
+      message: error?.message || "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   createPost,
   deletePost,
@@ -902,4 +1095,12 @@ module.exports = {
   approvedPost, // duyệt bài
   savePost,
   unSavePost,
+
+  /////////////////////////// ADMIN MANAGER ///////////////////////////
+
+  getDeletePosts,
+  getPostsStatistics,
+  getUnapprovedPostsStatistics,
+  getapprovedPostsStatistics,
+  getPostDeleteDetailById,
 };

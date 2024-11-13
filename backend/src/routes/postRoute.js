@@ -111,4 +111,36 @@ router.get(
   postController.getSavedPostId
 );
 
+/////////////////////////// ADMIN MANAGER ///////////////////////////
+
+router.get(
+  "/getDeletePosts/:currentPage",
+  checkAdminJWT,
+  postController.getDeletePosts
+);
+
+router.get(
+  "/getPostsStatistics/:day/:month/:year",
+  checkAdminJWT,
+  postController.getPostsStatistics
+);
+
+router.get(
+  "/getUnapprovedPostsStatistics/:day/:month/:year",
+  checkAdminJWT,
+  postController.getUnapprovedPostsStatistics
+);
+
+router.get(
+  "/getapprovedPostsStatistics/:day/:month/:year",
+  checkAdminJWT,
+  postController.getapprovedPostsStatistics
+);
+
+router.get(
+  "/getPostDeleteDetailById/:postId",
+  checkAdminJWT,
+  postController.getPostDeleteDetailById
+);
+
 module.exports = router;

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const sendResponse = require("../utils/sendResponse");
+const adminManagerModel = require("../models/adminManagerModel");
 
 const createJWT = (payload) => {
   let secret = process.env.JWT_SECRET;
@@ -47,7 +48,14 @@ const checkAdminJWT = (req, res, next) => {
       }
     }
 
-    // check jwt thành công sẽ lưu userId vào req
+    const adminId = resutl.id;
+    let admin = await adminManagerModel.findById(adminId);
+
+    if (!admin) {
+      return sendResponse(res, 401, "Đăng nhập để thực hiện thao tác này");
+    }
+
+    // check jwt thành công sẽ lưu adminId vào req
     req.adminId = resutl.id;
     next();
   });
