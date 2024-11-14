@@ -120,31 +120,31 @@ router.get(
 
 router.get(
   "/getDeleteDocuments/:currentPage",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   documentController.getDeleteDocuments
 );
 
 router.get(
   "/getDocumentStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   documentController.getDocumentStatistics
 );
 
 router.get(
   "/getUnapprovedDocumentStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   documentController.getUnapprovedDocumentStatistics
 );
 
 router.get(
   "/getApprovedDocumentStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   documentController.getApprovedDocumentStatistics
 );
 
 router.get(
   "/getDocumentDeleteDetailById/:documentId",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   documentController.getDocumentDeleteDetailById
 );
 
