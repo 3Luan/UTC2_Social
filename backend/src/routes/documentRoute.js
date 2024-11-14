@@ -1,6 +1,6 @@
 const express = require("express");
 const documentController = require("../controllers/documentController");
-const { checkJWT, checkAdminJWT } = require("../middleware/jwtActions");
+const { checkJWT, checkAdminManagerJWT } = require("../middleware/jwtActions");
 const router = express.Router();
 const {
   checkUserBanned,

@@ -1,6 +1,6 @@
 const express = require("express");
 const userController = require("../controllers/userController");
-const { checkJWT, checkAdminJWT } = require("../middleware/jwtActions");
+const { checkJWT, checkAdminManagerJWT } = require("../middleware/jwtActions");
 const { checkUserBanned } = require("../middleware/userActions");
 const router = express.Router();
 
@@ -72,58 +72,73 @@ router.get(
 ////////////////////////Admin Manager//////////////////////
 router.get(
   "/getAllAdminUsers/:currentPage",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getAllAdminUsers
 );
 router.get(
   "/getAllNonAdminUsers/:currentPage",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getAllNonAdminUsers
 );
 
 router.get(
   "/getAllAdminUsers/:currentPage/:keyword",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getAllAdminUsers
 );
 router.get(
   "/getAllNonAdminUsers/:currentPage/:keyword",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getAllNonAdminUsers
 );
 
-router.post("/grantAdminRole", checkAdminJWT, userController.grantAdminRole);
-router.post("/revokeAdminRole", checkAdminJWT, userController.revokeAdminRole);
+router.post(
+  "/grantAdminRole",
+  checkAdminManagerJWT,
+  userController.grantAdminRole
+);
+router.post(
+  "/revokeAdminRole",
+  checkAdminManagerJWT,
+  userController.revokeAdminRole
+);
 
 router.get(
   "/getUserStatistics",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getUserStatistics
 );
 
 router.get(
   "/getUserIsBanStatistics",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getUserIsBanStatistics
 );
 
 router.get(
   "/getUserNotBanStatistics",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getUserNotBanStatistics
 );
 
-router.post("/banUser", checkAdminJWT, userController.banUser);
-router.post("/unbanUser", checkAdminJWT, userController.unbanUser);
+router.post("/banUser", checkAdminManagerJWT, userController.banUser);
+router.post("/unbanUser", checkAdminManagerJWT, userController.unbanUser);
+
 router.get(
-  "/getBanUser/:currentPage/:keyword",
-  checkAdminJWT,
-  userController.getBanUser
+  "/getBanUsers/:currentPage",
+  checkAdminManagerJWT,
+  userController.getBanUsers
+);
+
+router.get(
+  "/getBanUsers/:currentPage/:keyword",
+  checkAdminManagerJWT,
+  userController.getBanUsers
 );
 
 router.get(
   "/getNewUserStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   userController.getNewUserStatistics
 );
 

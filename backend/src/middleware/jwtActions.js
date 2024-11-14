@@ -33,7 +33,7 @@ const checkJWT = (req, res, next) => {
   });
 };
 
-const checkAdminJWT = (req, res, next) => {
+const checkAdminManagerJWT = (req, res, next) => {
   const token = req.cookies.tokenAdmin;
 
   if (!token) {
@@ -64,5 +64,5 @@ const checkAdminJWT = (req, res, next) => {
 module.exports = {
   createJWT,
   checkJWT,
-  checkAdminJWT,
+  checkAdminManagerJWT,
 };

@@ -150,7 +150,6 @@ let getReplyByCommentId = async (req, res) => {
     }
 
     res.status(200).json({
-      code: 0,
       message: "Lấy phản hồi theo bình luận thành công",
       comment,
     });
@@ -229,7 +228,7 @@ let deleteComment = async (req, res) => {
       });
     }
 
-    if (!user._id.equals(comment.user)) {
+    if (!user._id == comment.user) {
       return res.status(403).json({
         message: "Lỗi: user không có quyền",
       });

@@ -1,6 +1,6 @@
 const express = require("express");
 const postController = require("../controllers/postController");
-const { checkJWT, checkAdminJWT } = require("../middleware/jwtActions");
+const { checkJWT, checkAdminManagerJWT } = require("../middleware/jwtActions");
 const router = express.Router();
 
 const multer = require("multer");
@@ -115,31 +115,31 @@ router.get(
 
 router.get(
   "/getDeletePosts/:currentPage",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   postController.getDeletePosts
 );
 
 router.get(
   "/getPostsStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   postController.getPostsStatistics
 );
 
 router.get(
   "/getUnapprovedPostsStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   postController.getUnapprovedPostsStatistics
 );
 
 router.get(
   "/getapprovedPostsStatistics/:day/:month/:year",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   postController.getapprovedPostsStatistics
 );
 
 router.get(
   "/getPostDeleteDetailById/:postId",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   postController.getPostDeleteDetailById
 );
 

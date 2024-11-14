@@ -1,6 +1,6 @@
 const express = require("express");
 const commentController = require("../controllers/commentController");
-const { checkJWT, checkAdminJWT } = require("../middleware/jwtActions");
+const { checkJWT, checkAdminManagerJWT } = require("../middleware/jwtActions");
 const {
   checkUserBanned,
   checkUserIsAdmin,
@@ -38,7 +38,7 @@ router.post(
 //Admin Manager
 router.get(
   "/getDeleteComments/:currentPage",
-  checkAdminJWT,
+  checkAdminManagerJWT,
   commentController.getDeleteComments
 );
 

@@ -475,7 +475,6 @@ let grantAdminRole = async (req, res) => {
     // Check if the user is already an admin
     if (user.isAdmin) {
       return res.status(400).json({
-        code: 1,
         message: "Người dùng đã là Người kiểm duyệt",
       });
     }
@@ -670,7 +669,7 @@ let unbanUser = async (req, res) => {
   }
 };
 
-let getBanUser = async (req, res) => {
+let getBanUsers = async (req, res) => {
   try {
     const currentPage = req.params.currentPage || 1;
     const keyword = req.params.keyword || null;
@@ -772,6 +771,6 @@ module.exports = {
   getUserNotBanStatistics,
   banUser,
   unbanUser,
-  getBanUser,
+  getBanUsers,
   getNewUserStatistics,
 };
