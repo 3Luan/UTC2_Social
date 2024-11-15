@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: `${process.env.REACT_APP_URL_BACKEND}`,
+  // timeout: 30000,
   withCredentials: true,
 });
 
@@ -10,35 +11,20 @@ instance.interceptors.response.use(
     return response.data ? response.data : response;
   },
   function (error) {
-    if (error.response) {
-      // Xử lý lỗi từ response HTTP
-      const { status, data } = error.response;
+    // Enhanced logging of the error
+    // if (error.response) {
+    //   console.log('Error Response:', error.response);
+    //   console.log('Error Data:', error.response.data);
+    //   console.log('Error Status:', error.response.status);
+    // } else if (error.request) {
+    //   console.log('Error Request:', error.request);
+    // } else {
+    //   console.log('Error Message:', error.message);
+    // }
+    // console.log('Error Config:', error.config);
 
-      // Thông báo lỗi cho người dùng nếu cần thiết
-      if (status === 401) {
-        // Xử lý lỗi xác thực, chẳng hạn chuyển hướng đến trang đăng nhập
-        console.log("Unauthorized error:", data);
-      } else {
-        // Hiển thị thông báo lỗi cho người dùng
-        console.log("An error occurred:", data);
-      }
-    } else if (error.request) {
-      // Xử lý lỗi không có response từ server
-      console.log("No response received from server:", error.request);
-    } else {
-      // Xử lý lỗi khác (lỗi trong quá trình gửi request)
-      console.log("Error in request:", error.message);
-    }
-
-    // Ghi log hệ thống
-    // logErrorToServer(error);
-
-    // Trả về một object chứa thông tin lỗi
-    return {
-      data: error.response ? error.response.data : null,
-      status: error.response ? error.response.status : null,
-      headers: error.response ? error.response.headers : null,
-    };
+    // Forward the error
+    return Promise.reject(error.response ? error.response : error);
   }
 );
 
