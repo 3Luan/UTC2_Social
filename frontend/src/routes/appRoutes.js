@@ -2,6 +2,8 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import { useSelector } from "react-redux";
+import NewsUTC2 from "../pages/NewsUTC2";
+import PostDetailsUTC2 from "../components/PostDetailsUTC2";
 
 const AppRoutes = () => {
   return (
@@ -10,6 +12,15 @@ const AppRoutes = () => {
         {/* Routes cho phần user */}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
+        <Route path="/tin-tuc-su-kien" element={<NewsUTC2 />} />
+        <Route path="/thong-bao/search" element={<Home />} />
+        <Route path="/tin-tuc-su-kien/search" element={<NewsUTC2 />} />
+
+        <Route path="/student/post/:postUTC2Id" element={<PostDetailsUTC2 />} />
+        <Route
+          path="/tin-tuc-su-kien/:postUTC2Id"
+          element={<PostDetailsUTC2 />}
+        />
 
         {/* Nếu route không tồn tại sẽ quay về Home */}
         <Route path="*" element={<Home />} />
