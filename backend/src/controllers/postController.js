@@ -460,7 +460,7 @@ let getPostDetailById = async (req, res) => {
   }
 };
 
-let getPostUnApprovedDetailById = async (req, res) => {
+let getPostUnapprovedDetailById = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.userId;
@@ -759,7 +759,7 @@ let savePost = async (req, res) => {
 };
 
 // Hủy lưu bài viết
-let unSavePost = async (req, res) => {
+let UnsavePost = async (req, res) => {
   try {
     const userId = req.userId;
     const postId = req.body.postId;
@@ -1004,7 +1004,7 @@ let getUnapprovedPostsStatistics = async (req, res) => {
   }
 };
 
-let getapprovedPostsStatistics = async (req, res) => {
+let getApprovedPostsStatistics = async (req, res) => {
   try {
     const { day, month, year } = req.params;
 
@@ -1088,19 +1088,19 @@ module.exports = {
   getSavedPosts,
 
   getPostDetailById,
-  getPostUnApprovedDetailById,
+  getPostUnapprovedDetailById,
   getSavedPostId,
 
   toggleLikePost, // like, hủy like
   approvedPost, // duyệt bài
   savePost,
-  unSavePost,
+  UnsavePost,
 
   /////////////////////////// ADMIN MANAGER ///////////////////////////
 
   getDeletePosts,
   getPostsStatistics,
   getUnapprovedPostsStatistics,
-  getapprovedPostsStatistics,
+  getApprovedPostsStatistics,
   getPostDeleteDetailById,
 };

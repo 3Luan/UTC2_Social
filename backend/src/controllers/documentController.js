@@ -714,7 +714,7 @@ let saveDocument = async (req, res) => {
 };
 
 // Hủy lưu bài viết
-let unSaveDocument = async (req, res) => {
+let UnsaveDocument = async (req, res) => {
   try {
     const userId = req.userId;
     const documentId = req.body.documentId;
@@ -967,7 +967,7 @@ module.exports = {
   toggleLikeDocument,
   approvedDocument,
   saveDocument,
-  unSaveDocument,
+  UnsaveDocument,
 
   /////////////////////////// ADMIN MANAGER ///////////////////////////
 

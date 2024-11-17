@@ -9,8 +9,6 @@ const upload = multer({ storage: storage });
 
 router.route("/:chatId").get(checkJWT, messageController.allMessages);
 
-// router.route("/").post(checkJWT, messageController.sendMessage);
-
 router.route("/").post(
   checkJWT,
   upload.fields([

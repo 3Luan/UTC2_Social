@@ -7,12 +7,14 @@ const User = require("../models/userModel");
 const accessChat = async (req, res) => {
   const { userId } = req.body;
 
+  // Kiểm tra thông tin bắt buộc
   if (!userId) {
     console.log("UserId param not sent with request");
-    return res.sendStatus(400);
+    return res.status(400).send({ message: "Thiếu thông tin userId" });
   }
 
   try {
+    // Tìm cuộc trò chuyện giữa hai người dùng
     var isChat = await Chat.find({
       isGroupChat: false,
       $and: [
@@ -29,23 +31,28 @@ const accessChat = async (req, res) => {
     });
 
     if (isChat.length > 0) {
-      res.send(isChat[0]);
-    } else {
-      var chatData = {
-        chatName: "sender",
-        isGroupChat: false,
-        users: [req.userId, userId],
-      };
-
-      const createdChat = await Chat.create(chatData);
-      const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
-        "users",
-        "-password"
-      );
-      res.status(200).json(FullChat);
+      // Nếu cuộc trò chuyện đã tồn tại
+      return res.status(200).json(isChat[0]);
     }
+
+    // Tạo cuộc trò chuyện mới nếu chưa có
+    const chatData = {
+      chatName: "sender",
+      isGroupChat: false,
+      users: [req.userId, userId],
+    };
+
+    const createdChat = await Chat.create(chatData);
+    const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
+      "users",
+      "-password"
+    );
+
+    res.status(201).json(FullChat); // Thành công
   } catch (error) {
-    res.status(400).send(error.message);
+    res
+      .status(500)
+      .send({ message: "Đã xảy ra lỗi trên máy chủ", error: error.message });
   }
 };
 
@@ -68,9 +75,14 @@ const fetchChats = async (req, res) => {
       select: "name pic email",
     });
 
-    res.status(200).send(results);
+    if (!results || results.length === 0) {
+      return res.status(404).send({ message: "No chats found" }); // Không tìm thấy dữ liệu
+    }
+
+    res.status(200).send(results); // Thành công
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error(error); // Ghi lại lỗi để debug
+    res.status(500).send({ message: "Internal Server Error" }); // Lỗi máy chủ
   }
 };
 
@@ -79,20 +91,29 @@ const fetchChats = async (req, res) => {
 // //@access          Protected
 const createGroupChat = async (req, res) => {
   try {
+    // Kiểm tra các trường bắt buộc
     if (!req.body.users || !req.body.name) {
-      return res.status(400).send({ message: "Please Fill all the fields" });
+      return res.status(400).json({ message: "Please fill all the fields" }); // Lỗi yêu cầu không hợp lệ
     }
 
-    var users = JSON.parse(req.body.users);
+    let users;
+    try {
+      users = JSON.parse(req.body.users);
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid users format" }); // Lỗi định dạng dữ liệu
+    }
 
+    // Kiểm tra số lượng người dùng
     if (users.length < 2) {
-      return res
-        .status(400)
-        .send("More than 2 users are required to form a group chat");
+      return res.status(400).json({
+        message: "At least 2 users are required to form a group chat",
+      });
     }
 
+    // Thêm người dùng hiện tại vào nhóm
     users.push(req.userId);
 
+    // Tạo nhóm chat
     const groupChat = await Chat.create({
       chatName: req.body.name,
       users: users,
@@ -100,13 +121,17 @@ const createGroupChat = async (req, res) => {
       groupAdmin: req.userId,
     });
 
+    // Tìm kiếm và populate thông tin nhóm chat đầy đủ
     const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
 
-    res.status(200).json({ status: 200, data: fullGroupChat });
+    res.status(201).json({ data: fullGroupChat });
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

@@ -9,8 +9,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.route("/").get(checkJWT, userController.getUsers);
-router.post("/follow", checkJWT, userController.followUser);
-router.post("/unfollow", checkJWT, userController.unfollowUser);
+router.post("/followUser", checkJWT, userController.followUser);
+router.post("/unfollowUser", checkJWT, userController.unfollowUser);
 
 router.post(
   "/updateProfile",
@@ -21,7 +21,7 @@ router.post(
 );
 
 router.get(
-  "/getUnfollowed/:currentPage",
+  "/getUnfollowedUsers/:currentPage",
   checkJWT,
   checkUserBanned,
   userController.getUnfollowedUsers
@@ -42,7 +42,7 @@ router.get(
 );
 
 router.get(
-  "/getUnfollowed/:currentPage/:keyword",
+  "/getUnfollowedUsers/:currentPage/:keyword",
   checkJWT,
   checkUserBanned,
   userController.getUnfollowedUsers

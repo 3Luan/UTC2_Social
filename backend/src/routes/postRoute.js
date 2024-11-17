@@ -64,10 +64,10 @@ router.get(
 
 router.get("/getPostDetailById/:postId", postController.getPostDetailById);
 router.get(
-  "/getPostUnApprovedDetailById/:postId",
+  "/getPostUnapprovedDetailById/:postId",
   checkJWT,
   checkUserBanned,
-  postController.getPostUnApprovedDetailById
+  postController.getPostUnapprovedDetailById
 );
 
 router.post("/toggleLikePost", checkJWT, postController.toggleLikePost);
@@ -87,10 +87,10 @@ router.post(
 
 router.post("/savePost", checkJWT, checkUserBanned, postController.savePost);
 router.post(
-  "/unSavePost",
+  "/UnsavePost",
   checkJWT,
   checkUserBanned,
-  postController.unSavePost
+  postController.UnsavePost
 );
 router.get(
   "/getSavedPosts/:currentPage",
@@ -132,9 +132,9 @@ router.get(
 );
 
 router.get(
-  "/getapprovedPostsStatistics/:day/:month/:year",
+  "/getApprovedPostsStatistics/:day/:month/:year",
   checkAdminManagerJWT,
-  postController.getapprovedPostsStatistics
+  postController.getApprovedPostsStatistics
 );
 
 router.get(

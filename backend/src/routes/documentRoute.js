@@ -97,10 +97,10 @@ router.post(
   documentController.saveDocument
 );
 router.post(
-  "/unSaveDocument",
+  "/UnsaveDocument",
   checkJWT,
   checkUserBanned,
-  documentController.unSaveDocument
+  documentController.UnsaveDocument
 );
 
 router.get(

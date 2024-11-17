@@ -25,9 +25,9 @@ const allMessages = async (req, res) => {
       .limit(10)
       .sort({ createdAt: -1 });
 
-    res.json(messages.reverse());
+    res.status(200).json(messages.reverse());
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 };
 
@@ -48,16 +48,14 @@ const sendMessage = async (req, res) => {
 
   if (!isUserInChat) {
     return res
-      .status(200)
+      .status(403)
       .send({ message: "Bạn không tồn tại trong cuộc trò chuyện này" });
   }
 
   if (!content || !chatId) {
-    // return res.sendStatus(400);
     return res.status(400).send({ message: "Không đủ thông tin để thực hiện" });
   }
 
-  // Tạo một hàm để tạo tên file mới (uuid + timestamp)
   const generateUniqueFileName = (originalName) => {
     const extname = path.extname(originalName);
     const timestamp = Date.now();
@@ -99,9 +97,11 @@ const sendMessage = async (req, res) => {
 
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
 
-    res.json(message);
+    res.status(201).json(message); // Thành công
   } catch (error) {
-    res.status(400).send(error.message);
+    res
+      .status(500)
+      .send({ message: "Đã xảy ra lỗi trên máy chủ", error: error.message });
   }
 };
 
