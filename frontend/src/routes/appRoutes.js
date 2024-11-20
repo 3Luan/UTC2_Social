@@ -6,6 +6,9 @@ import NewsUTC2 from "../pages/NewsUTC2";
 import PostDetailsUTC2 from "../components/PostDetailsUTC2";
 import Message from "../pages/Message";
 import PrivateRoutes from "./privateRoutes";
+import Community from "../pages/Community";
+import PostDetails from "../components/PostDetails";
+import PostUnApprovedDetails from "../components/PostUnApprovedDetails";
 
 const AppRoutes = () => {
   return (
@@ -39,6 +42,36 @@ const AppRoutes = () => {
           element={<PostDetailsUTC2 />}
         />
 
+        <Route path="/community" element={<Community />} />
+
+        <Route
+          path="/community/history"
+          element={
+            <PrivateRoutes>
+              <Community />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route path="/community/post/:postId" element={<PostDetails />} />
+
+        <Route
+          path="/community/unapproved"
+          element={
+            <PrivateRoutes>
+              <Community />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/bai-viet-chua-duyet/:postId"
+          element={
+            <PrivateRoutes>
+              <PostUnApprovedDetails />
+            </PrivateRoutes>
+          }
+        />
         {/* Nếu route không tồn tại sẽ quay về Home */}
         <Route path="*" element={<Home />} />
       </Routes>

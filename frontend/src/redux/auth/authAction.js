@@ -36,8 +36,6 @@ export const handleRefresh = () => {
       dispatch(refresh());
 
       let res = await refreshAPI();
-      console.log(res);
-
       // Refresh thành công
       dispatch(refreshSuccess(res?.data));
     } catch (error) {

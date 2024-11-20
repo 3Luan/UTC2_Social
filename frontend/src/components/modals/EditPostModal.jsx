@@ -1,0 +1,327 @@
+import React, { useEffect, useRef, useState } from "react";
+import {
+  createPostAPI,
+  getPostDetailByIdAPI,
+  updatePostAPI,
+} from "../../services/postService";
+import TextInput from "../TextInput";
+import ReactQuill from "react-quill";
+import CustomButton from "../CustomButton";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import Loading from "../Loading";
+import { useLocation } from "react-router-dom";
+
+const EditPostModal = ({
+  openModal,
+  setOpenModal,
+  postId,
+  addPost,
+  deletePost,
+}) => {
+  const auth = useSelector((state) => state.auth);
+  const [post, setPost] = useState();
+  const [content, setContent] = useState("");
+  const [loadUpdatePost, setLoadUpdatePost] = useState(false);
+  const [title, setTitle] = useState("");
+  const [images, setImages] = useState([]);
+  const [files, setFiles] = useState([]);
+  const quillRef = useRef();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (openModal && postId) {
+      getData();
+    }
+  }, [openModal, postId]);
+
+  useEffect(() => {
+    if (post) {
+      setTitle(post?.title);
+      setContent(post?.content);
+      setImages(post?.images);
+      setFiles(post?.files);
+    }
+  }, [post]);
+
+  const getData = async () => {
+    const data = await getPostDetailByIdAPI(postId);
+    setPost(data?.data);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setImages(images.filter((_, index) => index !== indexToRemove));
+  };
+
+  const handleRemoveFile = (indexToRemove) => {
+    setFiles((prevFiles) =>
+      prevFiles.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
+  const handleImageUpload = (e) => {
+    const selectedImages = Array.from(e.target.files);
+    if (selectedImages.length + images.length > 10) {
+      toast.error("Chỉ có thể tải lên tối đa 10 ảnh.");
+      return;
+    }
+    setImages((prevImages) => [...prevImages, ...selectedImages]);
+  };
+
+  const handleFileUpload = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length + files.length > 10) {
+      toast.error("Chỉ có thể tải lên tối đa 10 tệp.");
+      return;
+    }
+    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+  };
+
+  const onclickUpdatePosts = async () => {
+    if (!title) {
+      return toast.error("Tiêu đề không được bỏ trống!");
+    } else if (!content) {
+      return toast.error("Nội dung không được bỏ trống!");
+    } else {
+      setLoadUpdatePost(true);
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("postId", postId);
+      formData.append("content", content);
+
+      for (let i = 0; i < images.length; i++) {
+        if (images[i]?._id) {
+          formData.append("imagesOld", images[i]._id);
+        } else {
+          formData.append("images", images[i]);
+        }
+      }
+      for (let i = 0; i < files.length; i++) {
+        if (files[i]?._id) {
+          formData.append("filesOld", files[i]._id);
+        } else {
+          formData.append("files", files[i]);
+        }
+      }
+
+      try {
+        await toast.promise(updatePostAPI(formData), {
+          loading: "Bài viết đang được sửa...",
+          success: (data) => {
+            if (auth.isAdmin) {
+              if (
+                location.pathname === "/community" ||
+                location.pathname.startsWith("/profile")
+              ) {
+                deletePost(postId);
+                addPost(data?.data?.updatedPost);
+              }
+            } else {
+              deletePost(postId);
+            }
+
+            handleCloseModal();
+            return data.message;
+          },
+          error: (error) => {
+            return error.message;
+          },
+        });
+      } catch (error) {}
+      setLoadUpdatePost(false);
+    }
+  };
+
+  return (
+    <>
+      {openModal && (
+        <>
+          {!post ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+              <div className="fixed inset-0 bg-black opacity-50"></div>
+              <div
+                id="static-modal"
+                data-modal-backdrop="static"
+                tabIndex="-1"
+                aria-hidden="true"
+                className="relative z-50 w-full max-w-2xl overflow-y-auto bg-white rounded-lg shadow-lg"
+              >
+                <div className="relative p-4 md:p-5 border-b rounded-t">
+                  <h3 className="text-xl text-center font-semibold text-gray-900">
+                    <Loading />
+                  </h3>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="pt-20 fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                <div className="fixed inset-0 bg-black opacity-50"></div>
+                <div
+                  id="static-modal"
+                  data-modal-backdrop="static"
+                  tabIndex="-1"
+                  aria-hidden="true"
+                  className="relative z-50 w-full max-w-2xl overflow-y-auto bg-white rounded-lg shadow-lg"
+                >
+                  {/* Modal content */}
+                  <div className="relative p-4 md:p-5 border-b rounded-t">
+                    <h3 className="text-xl text-center font-semibold text-gray-900">
+                      Chỉnh sửa
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={handleCloseModal}
+                      className="absolute top-0 right-0 px-4 py-2 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg focus:outline-none"
+                    >
+                      <i className="fa-solid fa-x"></i>
+                    </button>
+                  </div>
+                  <div className="bg-white px-4 rounded-lg my-2">
+                    <TextInput
+                      type="text"
+                      styles="w-full"
+                      placeholder="Tiêu đề bài viết...."
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+
+                    <ReactQuill
+                      ref={quillRef}
+                      value={content}
+                      onChange={setContent}
+                      formats={EditPostModal.formats}
+                      modules={EditPostModal.modules}
+                      placeholder="Nội dung bài viết..."
+                    />
+
+                    <div className="flex gap-3 items-center my-3">
+                      {/* Thêm ảnh */}
+                      <label className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer">
+                        <input
+                          type="file"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          accept=".jpg, .png, .jpeg, image/*"
+                          multiple
+                        />
+                        <i className="fa-solid fa-image"></i>
+                        <span>Thêm ảnh</span>
+                      </label>
+
+                      {/* Thêm files */}
+                      <label className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer">
+                        <input
+                          type="file"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          accept=".pdf, .doc, .docx"
+                          multiple
+                        />
+                        <i className="fa-solid fa-upload"></i>
+                        <span>Thêm tệp</span>
+                      </label>
+                    </div>
+
+                    {/* Hiển thị danh sách hình ảnh */}
+                    <div className="flex flex-wrap gap-1">
+                      {/* Hiển thị cả ảnh đã có và ảnh mới được thêm */}
+                      {images?.map((image, index) => {
+                        return (
+                          <div key={index} className="relative">
+                            <img
+                              src={
+                                image._id
+                                  ? `${process.env.REACT_APP_URL_BACKEND}/${image.path}`
+                                  : URL.createObjectURL(image)
+                              }
+                              alt={`Image ${index}`}
+                              className="w-auto h-32 rounded"
+                            />
+                            <div className="text-center">{image.name}</div>
+                            <button
+                              type="button"
+                              className="absolute top-0 right-0 px-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none"
+                              onClick={() => handleRemoveImage(index)}
+                            >
+                              <i className="fa-solid fa-x"></i>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Hiển thị danh sách các tệpflex flex-wrap */}
+                    <div className="my-2 mt-5">
+                      {/* Hiển thị cả các tệp đã có và các tệp mới được thêm */}
+                      {files?.map((file, index) => (
+                        <>
+                          <div key={index} className="relative">
+                            <a
+                              href={
+                                file._id
+                                  ? `${process.env.REACT_APP_URL_BACKEND}/${file.path}`
+                                  : URL.createObjectURL(file)
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {file.name}
+                            </a>
+                            <button
+                              type="button"
+                              className="absolute top-0 right-0 px-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none"
+                              onClick={() => handleRemoveFile(index)}
+                            >
+                              <i className="fa-solid fa-x"></i>
+                            </button>
+                          </div>
+                        </>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* footer */}
+                  <div className="relative p-4 md:p-5 border rounded-t flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleCloseModal}
+                      className="px-4 py-2 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg focus:outline-none mr-2 border"
+                    >
+                      Đóng
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onclickUpdatePosts();
+                      }}
+                      className="px-4 py-2 text-black hover:bg-teal-300 hover:text-gray-900 rounded-lg focus:outline-none border bg-teal-500"
+                    >
+                      Lưu
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </>
+  );
+};
+
+EditPostModal.modules = {
+  toolbar: [["bold", "italic", "underline"]],
+  clipboard: {
+    matchVisual: false,
+  },
+};
+
+EditPostModal.formats = ["bold", "italic", "underline"];
+
+export default EditPostModal;
