@@ -9,6 +9,7 @@ import PrivateRoutes from "./privateRoutes";
 import Community from "../pages/Community";
 import PostDetails from "../components/PostDetails";
 import PostUnApprovedDetails from "../components/PostUnApprovedDetails";
+import Follow from "../pages/Follow";
 
 const AppRoutes = () => {
   return (
@@ -69,6 +70,39 @@ const AppRoutes = () => {
           element={
             <PrivateRoutes>
               <PostUnApprovedDetails />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/follow"
+          element={
+            <PrivateRoutes>
+              <Follow />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/follow/co-the-quen/search"
+          element={
+            <PrivateRoutes>
+              <Follow />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/follow/dang-theo-doi/search"
+          element={
+            <PrivateRoutes>
+              <Follow />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/follow/nguoi-theo-doi/search"
+          element={
+            <PrivateRoutes>
+              <Follow />
             </PrivateRoutes>
           }
         />
