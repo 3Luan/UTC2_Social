@@ -53,8 +53,6 @@ const NavBarComunity = ({
   }, []);
 
   const getData = async () => {
-    console.log("1");
-
     setIsLoading(true);
     setQuery(query);
     setCurrentPage(0);

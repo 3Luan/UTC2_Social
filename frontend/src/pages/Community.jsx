@@ -44,8 +44,6 @@ const Community = () => {
   };
 
   useEffect(() => {
-    console.log("location.pathname", location.pathname);
-
     if (location.pathname === "/community/unapproved") {
       dispatch(handleGetUnapprovedPosts());
     } else if (location.pathname === "/community/history") {
@@ -77,8 +75,6 @@ const Community = () => {
           ? await searchUnapprovedPostAPI(selectedPage.selected + 1, query)
           : (data = await getUnapprovedPostsAPI(selectedPage.selected + 1));
       } else if (location.pathname === "/community/history") {
-        console.log("setPosts", posts);
-
         data = query
           ? await searchHistoryPostAPI(selectedPage.selected + 1, query)
           : (data = await getHistoryPostsAPI(selectedPage.selected + 1));

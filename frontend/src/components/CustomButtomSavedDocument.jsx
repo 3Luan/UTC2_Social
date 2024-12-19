@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
-  getSavedPostIdAPI,
-  savePostdAPI,
-  UnsavePostdAPI,
-} from "../services/postService";
+  saveDocumentAPI,
+  UnsaveDocumentAPI,
+} from "../services/documentService";
 import toast from "react-hot-toast";
+import { getSavedPostIdAPI } from "../services/postService";
 
-const CustomButtomSavedPost = ({ postId }) => {
+const CustomButtomSavedDocument = ({ documentId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState();
-  const [postSaveId, setPostSaveId] = useState([]);
+  const [documentSaveId, setDocumentSaveId] = useState([]);
 
   useEffect(() => {
     getData();
@@ -19,22 +19,22 @@ const CustomButtomSavedPost = ({ postId }) => {
     setIsLoading(true);
     try {
       const data = await getSavedPostIdAPI();
-      setPostSaveId(data?.data);
+      setDocumentSaveId(data?.data);
     } catch (error) {
-      setPostSaveId([]);
+      setDocumentSaveId([]);
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    setIsSaved(postSaveId.some((id) => id === postId));
-  }, [postSaveId]);
+    setIsSaved(documentSaveId.some((id) => id === documentId));
+  }, [documentSaveId]);
 
   const onclickToggleSave = async () => {
     setIsLoading(true);
     if (isSaved) {
       try {
-        await toast.promise(UnsavePostdAPI(postId), {
+        await toast.promise(UnsaveDocumentAPI(documentId), {
           loading: "Loading...",
           success: (data) => {
             return data.message;
@@ -48,7 +48,7 @@ const CustomButtomSavedPost = ({ postId }) => {
       } catch (error) {}
     } else {
       try {
-        await toast.promise(savePostdAPI(postId), {
+        await toast.promise(saveDocumentAPI(documentId), {
           loading: "Loading...",
           success: (data) => {
             return data?.message;
@@ -92,4 +92,4 @@ const CustomButtomSavedPost = ({ postId }) => {
   );
 };
 
-export default CustomButtomSavedPost;
+export default CustomButtomSavedDocument;
