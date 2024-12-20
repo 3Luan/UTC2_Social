@@ -38,6 +38,10 @@ const Login = () => {
     }
   };
 
+  const onclickLoginWithGoogle = async () => {
+    window.open("http://localhost:3001/api/auth/google", "_self");
+  };
+
   return (
     <div className="bg-gray-100 w-full h-[100vh] flex items-center justify-center p-6">
       <div className="w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex bg-white rounded-xl overflow-hidden shadow-xl">
@@ -111,9 +115,9 @@ const Login = () => {
             type="submit"
             containerStyles={`inline-flex justify-center items-center rounded-md bg-white border border-black px-8 py-3 text-sm font-medium text-black outline-none`}
             title="Tiếp tục với google"
-            // onClick={() => {
-            //   if (!isLoading) onclickLoginWithGoogle();
-            // }}
+            onClick={() => {
+              if (!isLoading) onclickLoginWithGoogle();
+            }}
             img={logo_google}
           ></CustomButton>
 
