@@ -74,15 +74,15 @@ export const deleteDocumentAPI = (documentId) => {
   return backendApi.post(`/api/document/deleteDocument`, { documentId });
 };
 
-export const searchDocumentSavedAPI = (currentPage, keyword) => {
-  return backendApi.get(
-    `/api/document/searchDocumentSaved/${currentPage}/${keyword}`
-  );
+export const getSaveDocumentAPI = (currentPage) => {
+  return backendApi.get(`/api/document/getSavedDocuments/${currentPage}`);
 };
 
-// export const getSaveDocumentAPI = (currentPage) => {
-//   return backendApi.get(`/api/document/getSavePosts/${currentPage}`);
-// };
+export const searchDocumentSavedAPI = (currentPage, keyword) => {
+  return backendApi.get(
+    `/api/document/getSavedDocuments/${currentPage}/${keyword}`
+  );
+};
 
 // admin
 export const getDeleteDocumentsAPI = (currentPage) => {

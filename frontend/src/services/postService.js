@@ -63,11 +63,11 @@ export const deletePosttAPI = (postId) => {
 };
 
 export const searchPostSavedAPI = (currentPage, keyword) => {
-  return backendApi.get(`/api/post/searchPostSaved/${currentPage}/${keyword}`);
+  return backendApi.get(`/api/post/getSavedPosts/${currentPage}/${keyword}`);
 };
 
 export const getSavePostsdAPI = (currentPage) => {
-  return backendApi.get(`/api/post/getSavePosts/${currentPage}`);
+  return backendApi.get(`/api/post/getSavedPosts/${currentPage}`);
 };
 
 export const savePostdAPI = (postId) => {

@@ -13,6 +13,8 @@ import DocumentDetails from "../components/DocumentDetails";
 import Follow from "../pages/Follow";
 import Document from "../pages/Document";
 import DocumentUnApprovedDetails from "../components/document/DocumentUnApprovedDetails";
+import DocumentsSaved from "../pages/DocumentsSaved";
+import PostsSaved from "../pages/PostsSaved";
 
 const AppRoutes = () => {
   return (
@@ -134,6 +136,24 @@ const AppRoutes = () => {
           element={
             <PrivateRoutes>
               <DocumentUnApprovedDetails />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/bai-viet-da-luu"
+          element={
+            <PrivateRoutes>
+              <PostsSaved />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/tai-lieu-da-luu"
+          element={
+            <PrivateRoutes>
+              <DocumentsSaved />
             </PrivateRoutes>
           }
         />
