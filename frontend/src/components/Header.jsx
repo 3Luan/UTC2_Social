@@ -3,12 +3,22 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import CustomButton from "./CustomButton";
 import { handleLogout } from "../redux/auth/authAction";
 import logo_utc2 from "../assets/logo_utc2.png";
+import { useEffect, useRef, useState } from "react";
+import { getUnreadNotificationAPI } from "../services/notificationService";
+import PopupNotification from "./PopupNotification";
 
 const Header = () => {
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const pathname = window.location.pathname;
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef();
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [countNoti, setCountNoti] = useState(0);
+  const location = useLocation();
 
   const onClickLogout = () => {
     const confirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất?");
@@ -19,6 +29,28 @@ const Header = () => {
 
   const onClickLogin = () => {
     navigate("/login");
+  };
+
+  const toggleMenu = () => {
+    getData();
+    setMenuOpen(!menuOpen);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    setIsLoading(true);
+
+    try {
+      const data = await getUnreadNotificationAPI();
+      setCountNoti(data?.count);
+    } catch (error) {
+      setCountNoti(null);
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -56,9 +88,34 @@ const Header = () => {
             </Link>
           )}
 
-          <button className="relative">
+          <button onClick={() => toggleMenu()} className="relative">
             <i className="fa-solid fa-bell px-2"></i>
+            {isLoading ? (
+              <>
+                {countNoti === 0 ? (
+                  <></>
+                ) : (
+                  <div className="absolute top-1 right-1 w-3 h-3 bg-red-500 text-white flex items-center justify-center rounded-full text-xs"></div>
+                )}
+              </>
+            ) : (
+              <>
+                {countNoti && countNoti > 0 ? (
+                  <div className="absolute top-1 right-1 w-3 h-3 bg-red-500 text-white flex items-center justify-center rounded-full text-xs">
+                    {countNoti}
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </>
+            )}
           </button>
+
+          <PopupNotification
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+            setCountNoti={setCountNoti}
+          />
 
           <Link to={`/profile/${auth.id}`}>
             <i className="fa-solid fa-user px-2"></i>
