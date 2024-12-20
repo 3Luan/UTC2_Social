@@ -215,6 +215,8 @@ const verifyCodeForgotPassword = async (req, res) => {
   try {
     const { code, email, password } = req.body;
 
+    console.log(code, email, password);
+
     if (!code || !email || !password) {
       throw {
         status: 400,

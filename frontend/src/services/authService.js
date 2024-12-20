@@ -25,8 +25,12 @@ export const sendForgotPasswordAPI = (email) => {
   return backendApi.post("/api/auth/sendForgotPassword", { email });
 };
 
-export const verifyCodeForgotPasswordAPI = (code, email) => {
-  return backendApi.post("/api/auth/verifyCodeForgotPassword", { code, email });
+export const verifyCodeForgotPasswordAPI = (code, email, password) => {
+  return backendApi.post("/api/auth/verifyCodeForgotPassword", {
+    code,
+    email,
+    password,
+  });
 };
 
 export const forgotPasswordAPI = (email, password) => {
