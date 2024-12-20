@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 const cors = require("cors");
 const path = require("path"); // Để xử lý đường dẫn tệp
+require("./src/config/passport");
 
 // Cấu hình các tệp tĩnh từ thư mục uploads
 app.use(express.static("uploads/images"));

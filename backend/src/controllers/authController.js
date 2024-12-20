@@ -215,8 +215,6 @@ const verifyCodeForgotPassword = async (req, res) => {
   try {
     const { code, email, password } = req.body;
 
-    console.log(code, email, password);
-
     if (!code || !email || !password) {
       throw {
         status: 400,
@@ -437,6 +435,78 @@ let updatePassword = async (req, res) => {
   }
 };
 
+const loginWithGoogle = (req, res, next) => {
+  passport.authenticate("google", { scope: ["email", "profile"] })(
+    req,
+    res,
+    next
+  );
+};
+
+const loginWithGoogleCallback = (req, res, next) => {
+  passport.authenticate("google", async (profile) => {
+    // Logic xử lý sau khi đăng nhập thành công
+    try {
+      if (!profile) {
+        throw {
+          code: 1,
+          message: "Đăng nhập thất bại. Hãy thử lại",
+        };
+      }
+
+      let user = await userModel.findById(profile.id);
+
+      if (user) {
+        user.name = profile.displayName;
+        user.email = profile.emails;
+        user.pic = profile.photos[0].value;
+      } else {
+        user = await userModel.create({
+          _id: profile.id,
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          pic: profile.photos[0].value,
+        });
+      }
+
+      if (!user) {
+        user = await userModel.create({
+          _id: profile.id,
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          pic: profile.photos[0].value,
+        });
+      }
+
+      if (user.isBan) {
+        throw {
+          code: 1,
+          message: "Tài khoản này đã bị khóa",
+        };
+      }
+
+      let payload = {
+        id: user._id,
+      };
+
+      const token = jwtActions.createJWT(payload);
+
+      // Lưu token vào cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 * 365, // 1 năm
+        sameSite: "none",
+        secure: true,
+      });
+
+      res.redirect(`${process.env.URL_FRONTEND}`);
+    } catch (error) {
+      console.log(error);
+      res.redirect("http://localhost:3001/api/auth/google");
+    }
+  })(req, res, next);
+};
+
 module.exports = {
   register,
   verifyCode,
@@ -448,4 +518,7 @@ module.exports = {
   logout,
 
   updatePassword,
+
+  loginWithGoogle,
+  loginWithGoogleCallback,
 };

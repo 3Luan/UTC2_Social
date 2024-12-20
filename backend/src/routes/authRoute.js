@@ -24,4 +24,7 @@ router.post(
   authController.updatePassword
 );
 
+router.get("/google", authController.loginWithGoogle);
+router.get("/google/callback", authController.loginWithGoogleCallback);
+
 module.exports = router;

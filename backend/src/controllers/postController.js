@@ -256,8 +256,6 @@ const updatePost = async (req, res) => {
 
 let getPosts = async (req, res) => {
   try {
-    console.log("2");
-
     const currentPage = req.params.currentPage || 1;
     const keyword = req.params.keyword || null;
 
