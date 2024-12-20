@@ -23,10 +23,10 @@ const NotificationCard = ({ notification, handleClosePopup, setCountNoti }) => {
     if (notification && !notification?.isRead) {
       await readNotificationAPI(notification?._id);
 
-      const data = await getUnreadNotificationAPI();
-      if (data?.code === 0) {
+      try {
+        const data = await getUnreadNotificationAPI();
         setCountNoti(data?.count);
-      } else {
+      } catch (error) {
         setCountNoti(null);
       }
     }

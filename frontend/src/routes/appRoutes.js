@@ -15,6 +15,7 @@ import Document from "../pages/Document";
 import DocumentUnApprovedDetails from "../components/document/DocumentUnApprovedDetails";
 import DocumentsSaved from "../pages/DocumentsSaved";
 import PostsSaved from "../pages/PostsSaved";
+import Profile from "../pages/Profile";
 
 const AppRoutes = () => {
   return (
@@ -154,6 +155,16 @@ const AppRoutes = () => {
           element={
             <PrivateRoutes>
               <DocumentsSaved />
+            </PrivateRoutes>
+          }
+        />
+
+        {/* Routes cho phần Profile*/}
+        <Route
+          path="/profile/:userId"
+          element={
+            <PrivateRoutes>
+              <Profile />
             </PrivateRoutes>
           }
         />

@@ -41,15 +41,15 @@ const PopupNotification = ({ menuOpen, setMenuOpen, setCountNoti }) => {
   };
 
   const onclickLoadMore = async () => {
-    const data = await getNotificationsAPI(crPage);
-    if (data?.code === 0) {
-      setNotifications([...notifications, ...data.notifications]);
+    try {
+      const data = await getNotificationsAPI(crPage);
+      setNotifications([...notifications, ...data?.notifications]);
       setCrPage((x) => x + 1);
 
       if (data?.notifications?.length < 10) {
         setIsEnd(true);
       }
-    }
+    } catch (error) {}
   };
 
   const onclickReadAllNoti = async () => {

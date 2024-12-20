@@ -121,6 +121,12 @@ export const authSlice = createSlice({
       state.isInit = false;
       state.auth = false;
     },
+    updateSuccess: (state, action) => {
+      state.name = action.payload.user.name;
+      state.pic = action.payload.user.pic;
+      state.gender = action.payload.user.gender;
+      state.birth = action.payload.user.birth;
+    },
   },
 });
 

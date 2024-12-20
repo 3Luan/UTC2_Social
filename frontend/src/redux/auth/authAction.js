@@ -10,6 +10,7 @@ import {
   refresh,
   refreshError,
   refreshSuccess,
+  updateSuccess,
 } from "./authSlice";
 
 export const handleLogin = (email, password) => {
@@ -59,5 +60,17 @@ export const handleLogout = (navigate) => {
       // Logout thất bại
       dispatch(logoutError());
     }
+  };
+};
+
+export const handleUpdateProfile = () => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await refreshAPI();
+
+      if (res) {
+        dispatch(updateSuccess(res?.data));
+      }
+    } catch (error) {}
   };
 };
