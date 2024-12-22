@@ -81,3 +81,29 @@ export const UnsavePostdAPI = (postId) => {
 export const getSavedPostIdAPI = () => {
   return backendApi.get(`/api/post/getSavedPostId`);
 };
+
+//////////////////////// Admin //////////////////////
+
+export const getDeletePostsAPI = (currentPage) => {
+  return backendApi.get(`/api/post/getDeletePosts/${currentPage}`);
+};
+
+export const getPostsStatisticsAPI = (day, month, year) => {
+  return backendApi.get(`/api/post/getPostsStatistics/${day}/${month}/${year}`);
+};
+
+export const getUnapprovedPostsStatisticsAPI = (day, month, year) => {
+  return backendApi.get(
+    `/api/post/getUnapprovedPostsStatistics/${day}/${month}/${year}`
+  );
+};
+
+export const getapprovedPostsStatisticsAPI = (day, month, year) => {
+  return backendApi.get(
+    `/api/post/getapprovedPostsStatistics/${day}/${month}/${year}`
+  );
+};
+
+export const getPostDeleteDetailByIdAPI = (postId) => {
+  return backendApi.get(`/api/post/getPostDeleteDetailById/${postId}`);
+};

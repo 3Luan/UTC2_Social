@@ -66,7 +66,7 @@ export const searchAllAdminUsersAPI = (currentPage, keyword) => {
 
 export const searchAllNonAdminUsersAPI = (currentPage, keyword) => {
   return backendApi.get(
-    `/api/user/searchAllNonAdminUsers/${currentPage}/${keyword}`
+    `/api/user/getAllNonAdminUsers/${currentPage}/${keyword}`
   );
 };
 

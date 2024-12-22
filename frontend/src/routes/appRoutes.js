@@ -19,6 +19,18 @@ import Profile from "../pages/Profile";
 import Register from "../pages/Register";
 import ForgotPassword from "../pages/ForgotPassword";
 
+import LoginAdmin from "../admin/pages/LoginAdmin";
+import HomeAdmin from "../admin/pages/HomeAdmin";
+import PrivateAdminRoutes from "./privateAdminRoutes";
+import PostDelete from "../admin/pages/PostDelete";
+import Administrators from "../admin/pages/Administrators";
+import DocumentDelete from "../admin/pages/DocumentDelete";
+import CommentDelete from "../admin/pages/CommentDelete";
+import StatiticsPost from "../admin/components/StatiticsPost";
+import PostDeleteDetails from "../admin/components/PostDeleteDetails";
+import DocumentDeleteDetails from "../admin/components/DocumentDeleteDetails";
+import Statistics from "../admin/pages/Statistics";
+
 const AppRoutes = () => {
   return (
     <>
@@ -170,6 +182,91 @@ const AppRoutes = () => {
             <PrivateRoutes>
               <Profile />
             </PrivateRoutes>
+          }
+        />
+
+        {/* ////////////////Routes cho phần admin ////////////////////*/}
+
+        <Route path="/admin/login" element={<LoginAdmin />} />
+
+        <Route
+          path="/admin"
+          element={
+            <PrivateAdminRoutes>
+              <Statistics />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/bai-viet-da-xoa"
+          element={
+            <PrivateAdminRoutes>
+              <PostDelete />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/tai-lieu-da-xoa"
+          element={
+            <PrivateAdminRoutes>
+              <DocumentDelete />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/binh-luan-da-xoa"
+          element={
+            <PrivateAdminRoutes>
+              <CommentDelete />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/user"
+          element={
+            <PrivateAdminRoutes>
+              <Administrators />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/thong-ke-bai-viet"
+          element={
+            <PrivateAdminRoutes>
+              <HomeAdmin />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/thong-ke-tai-lieu"
+          element={
+            <PrivateAdminRoutes>
+              <HomeAdmin />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/bai-viet-da-xoa/:postId"
+          element={
+            <PrivateAdminRoutes>
+              <PostDeleteDetails />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/tai-lieu-da-xoa/:documentId"
+          element={
+            <PrivateAdminRoutes>
+              <DocumentDeleteDetails />
+            </PrivateAdminRoutes>
           }
         />
 
