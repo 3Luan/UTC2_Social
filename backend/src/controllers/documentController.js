@@ -800,7 +800,6 @@ let getDeleteDocuments = async (req, res) => {
     });
   }
 };
-
 let getDocumentStatistics = async (req, res) => {
   try {
     const { day, month, year } = req.params;
@@ -810,15 +809,16 @@ let getDocumentStatistics = async (req, res) => {
       isDoc: true,
     };
 
-    if (day !== "null" && month && year) {
+    if (day !== "null" && month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
       const startDate = new Date(`${year}-01-01`);
@@ -849,15 +849,16 @@ let getUnapprovedDocumentStatistics = async (req, res) => {
       isDisplay: false,
     };
 
-    if (day !== "null" && month && year) {
+    if (day !== "null" && month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
       const startDate = new Date(`${year}-01-01`);
@@ -888,15 +889,16 @@ let getApprovedDocumentStatistics = async (req, res) => {
       isDisplay: true,
     };
 
-    if (day !== "null" && month && year) {
+    if (day !== "null" && month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
       const startDate = new Date(`${year}-01-01`);

@@ -924,7 +924,6 @@ let getDeletePosts = async (req, res) => {
     });
   }
 };
-
 let getPostsStatistics = async (req, res) => {
   try {
     const { day, month, year } = req.params;
@@ -934,17 +933,21 @@ let getPostsStatistics = async (req, res) => {
       isDoc: false,
     };
 
-    if (day !== "null" && month && year) {
+    if (day !== "null" && month !== "null" && year) {
+      // Thống kê theo ngày
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
+      // Thống kê theo tháng
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
+      // Thống kê theo năm
       const startDate = new Date(`${year}-01-01`);
       const endDate = new Date(`${parseInt(year) + 1}-01-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
@@ -973,15 +976,16 @@ let getUnapprovedPostsStatistics = async (req, res) => {
       isDoc: false,
     };
 
-    if (day !== "null" && month && year) {
+    if (day !== "null" && month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
       const startDate = new Date(`${year}-01-01`);
@@ -1012,15 +1016,16 @@ let getApprovedPostsStatistics = async (req, res) => {
       isDoc: false,
     };
 
-    if (day !== "null" && month && year) {
+    if (day !== "null" && month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
       query.updatedAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
       const startDate = new Date(`${year}-01-01`);

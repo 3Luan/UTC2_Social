@@ -710,34 +710,38 @@ let getBanUsers = async (req, res) => {
     });
   }
 };
-
-// Thống kê người dùng mới theo ngày, tháng, năm
 let getNewUserStatistics = async (req, res) => {
   try {
     const { day, month, year } = req.params;
 
-    let query = {
-      isBan: false,
-    };
+    let query = { isBan: false };
 
-    // Filter by specific day, month, or year
     if (day !== "null" && month !== "null" && year) {
+      // Thống kê theo ngày
       const startDate = new Date(`${year}-${month}-${day}`);
       const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + 1); // For one day interval
+      if (isNaN(startDate)) throw new Error("Tham số ngày không hợp lệ");
+      endDate.setDate(endDate.getDate() + 1);
       query.createdAt = { $gte: startDate, $lt: endDate };
     } else if (month !== "null" && year) {
+      // Thống kê theo tháng
       const startDate = new Date(`${year}-${month}-01`);
-      const nextMonth = parseInt(month) + 1;
-      const endDate = new Date(`${year}-${nextMonth}-01`);
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+      const endDate = new Date(`${nextYear}-${nextMonth}-01`);
+      if (isNaN(startDate) || isNaN(endDate))
+        throw new Error("Tham số tháng không hợp lệ");
       query.createdAt = { $gte: startDate, $lt: endDate };
     } else if (year) {
+      // Thống kê theo năm
       const startDate = new Date(`${year}-01-01`);
       const endDate = new Date(`${parseInt(year) + 1}-01-01`);
+      if (isNaN(startDate) || isNaN(endDate))
+        throw new Error("Tham số năm không hợp lệ");
       query.createdAt = { $gte: startDate, $lt: endDate };
     }
 
-    // Count the new users matching the query
+    // Đếm số lượng người dùng mới phù hợp với điều kiện
     const count = await User.countDocuments(query);
 
     res.status(200).json({
@@ -745,7 +749,7 @@ let getNewUserStatistics = async (req, res) => {
       count: count,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Lỗi:", error.message);
     res.status(500).json({
       message: error.message || "Lỗi: getNewUserStatistics",
     });
