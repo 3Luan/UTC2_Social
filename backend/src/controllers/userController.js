@@ -4,6 +4,7 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const imageUploadPath = path.join("uploads/images");
 const NotificationModel = require("../models/notificationModel");
+const sendAccountLockEmail = require("../utils/sendAccountLockEmail");
 
 //@description     Get or Search all users
 //@route           GET /api/user?search=
@@ -622,6 +623,8 @@ let banUser = async (req, res) => {
     // Ban the user
     user.isBan = true;
     await user.save();
+
+    await sendAccountLockEmail(user?.email);
 
     res.status(200).json({
       message: "Khóa tài khoản thành công",
