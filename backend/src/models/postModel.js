@@ -47,6 +47,12 @@ const postSchema = new mongoose.Schema(
         ref: "comments",
       },
     ],
+    category: [
+      {
+        type: String,
+        ref: "documentCategories",
+      },
+    ],
     isDoc: {
       type: Boolean,
       default: false,

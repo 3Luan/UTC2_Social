@@ -8,6 +8,7 @@ const commentRoute = require("./commentRoute");
 const notificationRoute = require("./notificationRoute");
 const adminManagerRoute = require("./adminManagerRoute");
 const documentRoute = require("./documentRoute");
+const documentCategoryRoute = require("./documentCategoryRoute");
 
 let initRoutes = (app) => {
   app.use("/api/user", userRoute);
@@ -21,6 +22,7 @@ let initRoutes = (app) => {
 
   // Admin
   app.use("/api/adminManager", adminManagerRoute);
+  app.use("/api/documentCategory", documentCategoryRoute);
 
   return app;
 };
