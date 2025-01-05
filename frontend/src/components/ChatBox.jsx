@@ -350,14 +350,14 @@ const ChatBox = ({
               </div>
             </div>
 
-            <div className="flex flex-col items-end" ref={menuRef}>
+            <div className="flex flex-col items-end relative" ref={menuRef}>
               <button className=" px-3 rounded-md" onClick={toggleMenu}>
                 <i className="fa-solid fa-ellipsis" />
               </button>
               {menuOpen && (
                 <>
                   {selectedChat.isGroupChat ? (
-                    <div className=" bg-white shadow-xl border rounded-md z-10 mr-2">
+                    <div className=" bg-white shadow-xl border rounded-md z-10 mr-2 absolute w-64">
                       <button
                         className="block px-4 py-2 text-gray-800"
                         onClick={() => {

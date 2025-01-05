@@ -84,7 +84,7 @@ const PostsSaved = () => {
           {/* CENTER */}
           <div className="w-1/2 h-full flex flex-col  overflow-y-auto rounded-lg bg-white">
             <div className="flex justify-between mt-3 mx-3 pb-4 border-b">
-              <div className=" mt-2 bg-white z-10 rounded-md flex">
+              <div className=" mt-2 bg-white rounded-md flex">
                 <div className="block px-4 py-2 text-gray-800 leading-8 text-2xl font-bold">
                   Bài viết đã lưu
                 </div>

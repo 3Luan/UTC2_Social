@@ -144,12 +144,10 @@ const NavBarDocument = ({
     setSelectedCategory(event.target.value);
   };
 
-  console.log("categories", categories);
-
   return (
     <div className="bg-white m-3 rounded-xl  flex flex-col items-center">
       <div className="flex justify-between w-full pb-4 border-b">
-        <div ref={menuRef} className=" mt-2 bg-white z-10 rounded-md flex">
+        <div ref={menuRef} className=" mt-2 bg-white rounded-md flex">
           <Link
             to="/tai-lieu"
             onClick={() => setMenuOpen(false)}

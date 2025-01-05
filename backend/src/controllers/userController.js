@@ -128,7 +128,7 @@ let getUserInfoById = async (req, res) => {
     const userId = req.params.userId;
 
     let user = await User.findById(userId).select(
-      "_id name pic email isAdmin gender birth followings followers"
+      "_id name pic email isAdmin gender birth followings followers course"
     );
 
     const countFollowings = await User.find({
@@ -156,10 +156,10 @@ let getUserInfoById = async (req, res) => {
 let updateProfile = async (req, res) => {
   try {
     const userId = req.userId;
-    const { name, gender, birth, picOld } = req.body;
+    const { name, gender, birth, picOld, courseId } = req.body;
     const pic = req.files.pic || "";
 
-    if (!name || !gender || !birth || (!pic && !picOld)) {
+    if (!name || !gender || !birth || (!pic && !picOld) || !courseId) {
       return res.status(400).json({
         message: "Lỗi: Thông tin không đủ",
       });
@@ -181,6 +181,7 @@ let updateProfile = async (req, res) => {
         name,
         gender,
         birth,
+        course: courseId,
       };
     } else {
       // Tạo đường dẫn và lưu trữ các tệp và hình ảnh
@@ -195,6 +196,7 @@ let updateProfile = async (req, res) => {
         gender,
         birth,
         pic: fileData.path,
+        course: courseId,
       };
     }
 
@@ -211,6 +213,30 @@ let updateProfile = async (req, res) => {
   }
 };
 
+let updateCourse = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { courseId } = req.body;
+
+    if (!courseId) {
+      return res.status(400).json({
+        message: "Thông tin không đủ",
+      });
+    }
+
+    await User.updateOne({ _id: userId }, { course: courseId });
+
+    res.status(200).json({
+      message: "Cập nhật ngành học thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Đã có lỗi xảy ra server",
+    });
+  }
+};
+
 let getUnfollowedUsers = async (req, res) => {
   try {
     const currentPage = req.params.currentPage || 1;
@@ -219,30 +245,36 @@ let getUnfollowedUsers = async (req, res) => {
 
     const user = await User.findById(userId);
 
-    // If no keyword is provided, return all users that are not followed by the current user
+    if (!user) {
+      return res.status(404).json({
+        message: "Người dùng không tồn tại",
+      });
+    }
+
     const query = {
       _id: { $nin: user.followings, $ne: userId },
       isBan: false,
     };
 
-    // If keyword is provided, add it to the query
     if (keyword) {
       const regex = new RegExp(keyword, "i");
       query.name = regex;
     }
 
-    // Count users based on the query
     const count = await User.countDocuments(query);
 
+    let users = await User.find(query)
+      .sort({ course: 1, createdAt: -1 })
+      .exec();
+
+    const sameCourseUsers = users.filter((u) => u.course === user.course);
+    const otherCourseUsers = users.filter((u) => u.course !== user.course);
+
+    const combinedUsers = [...sameCourseUsers, ...otherCourseUsers];
     const offset = 12 * (currentPage - 1);
+    const paginatedUsers = combinedUsers.slice(offset, offset + 12);
 
-    // Fetch users based on the query
-    const users = await User.find(query)
-      .limit(12)
-      .skip(offset)
-      .sort({ createdAt: -1 });
-
-    if (!users || users.length === 0) {
+    if (!paginatedUsers || paginatedUsers.length === 0) {
       return res.status(404).json({
         message: "Không có data nào",
       });
@@ -251,10 +283,10 @@ let getUnfollowedUsers = async (req, res) => {
     res.status(200).json({
       message: "Tìm kiếm thành công",
       count: count,
-      data: users,
+      data: paginatedUsers,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({
       message: "Lỗi: getUnfollowedUsers",
     });
@@ -768,6 +800,8 @@ module.exports = {
   getFollowers,
   getUserInfoById,
   updateProfile,
+  updateCourse,
+
   ///// admin ////
   getAllAdminUsers,
   getAllNonAdminUsers,

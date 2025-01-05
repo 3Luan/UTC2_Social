@@ -87,8 +87,6 @@ const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
             setFiles([]);
 
             handleCloseModal();
-            console.log(data);
-
             return data.message;
           },
           error: (error) => {

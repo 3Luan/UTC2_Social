@@ -5,6 +5,7 @@ import { handleRefresh } from "./redux/auth/authAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { handleRefreshAdmin } from "./redux/authAdmin/authAdminAction";
+import UpdateCourseModal from "./components/modals/UpdateCourseModal";
 
 function App() {
   const dispatch = useDispatch();
@@ -12,8 +13,7 @@ function App() {
   const location = useLocation();
   const auth = useSelector((state) => state.auth);
   const authAdmin = useSelector((state) => state.authAdmin);
-
-  const [check, setCheck] = useState(false);
+  const [openModalUpdateCourse, setOpenModalUpdateCourse] = useState(false);
 
   useEffect(() => {
     dispatch(handleRefresh());
@@ -31,6 +31,12 @@ function App() {
       navigate("/");
     }
 
+    if (auth?.auth && !location.pathname.startsWith("/admin")) {
+      if (!auth?.course) {
+        setOpenModalUpdateCourse(true);
+      }
+    }
+
     if (authAdmin.auth && location.pathname === "/admin/login") {
       navigate("/admin");
     }
@@ -44,6 +50,13 @@ function App() {
     <>
       <AppRoutes />
       <Toaster position="bottom-left" reverseOrder={true} />
+
+      {openModalUpdateCourse && (
+        <UpdateCourseModal
+          openModal={openModalUpdateCourse}
+          setOpenModal={setOpenModalUpdateCourse}
+        />
+      )}
     </>
   );
 }

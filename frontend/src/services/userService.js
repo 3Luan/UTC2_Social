@@ -50,6 +50,10 @@ export const getUserInfoByIdAPI = (userId) => {
   return backendApi.get(`/api/user/getUserInfoById/${userId}`);
 };
 
+export const updateCourseAPI = (courseId) => {
+  return backendApi.post(`/api/user/updateCourse`, { courseId });
+};
+
 //////////////////////// Admin //////////////////////
 
 export const getAllAdminUsersAPI = (currentPage) => {

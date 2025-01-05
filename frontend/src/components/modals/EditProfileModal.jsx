@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfileAPI } from "../../services/userService";
 import { handleUpdateProfile } from "../../redux/auth/authAction";
+import { getCoursesAPI } from "../../services/documentCourseService";
 
 const EditProfileModal = ({ openModal, setOpenModal }) => {
   const auth = useSelector((state) => state.auth);
@@ -14,6 +15,22 @@ const EditProfileModal = ({ openModal, setOpenModal }) => {
   const [picUrl, setPicUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const [courses, setCourses] = useState([]);
+  const [courseSelect, setCourseSelect] = useState("");
+
+  const getCourse = async () => {
+    try {
+      let data = await getCoursesAPI();
+
+      setCourses(data?.data);
+    } catch (error) {
+      setCourses([]);
+    }
+  };
+
+  useEffect(() => {
+    getCourse();
+  }, []);
 
   useEffect(() => {
     dispatch(handleUpdateProfile());
@@ -21,6 +38,7 @@ const EditProfileModal = ({ openModal, setOpenModal }) => {
     if (auth) {
       setName(auth?.name);
       setGender(auth?.gender);
+      setCourseSelect(auth?.course);
       const date = new Date(auth.birth);
       const formattedBirth = date.toISOString().split("T")[0];
       setBirth(formattedBirth);
@@ -59,51 +77,52 @@ const EditProfileModal = ({ openModal, setOpenModal }) => {
 
   // Hàm xử lý khi người dùng lưu thông tin chỉnh sửa
   const handleSaveProfile = async () => {
-    if (!name && !gender && !birth) {
-      return toast.error("Thông tin không được bỏ trống!");
-    } else if (!pic && !picUrl) {
-      return toast.error("Hãy thêm ảnh đại diện!");
-    } else {
-      if (gender !== "male" && gender !== "female" && gender !== "other") {
-        toast.error("Giới tính không đúng");
-        return;
-      } else {
-        const currentDate = new Date().toISOString().split("T")[0];
-        if (birth > currentDate) {
-          toast.error("Ngày sinh không đúng");
-          return;
-        } else {
-          setIsLoading(true);
-
-          const formData = new FormData();
-          formData.append("name", name);
-          formData.append("gender", gender);
-          formData.append("birth", birth);
-
-          if (pic) {
-            formData.append("pic", pic);
-          } else {
-            formData.append("picOld", picUrl);
-          }
-
-          try {
-            await toast.promise(updateProfileAPI(formData), {
-              loading: "Loading...",
-              success: (data) => {
-                dispatch(handleUpdateProfile());
-                return data.message;
-              },
-              error: (error) => {
-                return error.message;
-              },
-            });
-          } catch (error) {}
-        }
-      }
+    if (!name || !gender || !birth || !courseSelect) {
+      toast.error("Thông tin không được bỏ trống!");
+      return;
     }
+    if (!pic && !picUrl) {
+      toast.error("Hãy thêm ảnh đại diện!");
+      return;
+    }
+    if (!["male", "female", "other"].includes(gender)) {
+      toast.error("Giới tính không hợp lệ!");
+      return;
+    }
+    const currentDate = new Date().toISOString().split("T")[0];
+    if (birth > currentDate) {
+      toast.error("Ngày sinh không hợp lệ!");
+      return;
+    }
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("gender", gender);
+    formData.append("birth", birth);
+    formData.append("courseId", courseSelect);
 
-    setIsLoading(false);
-    setOpenModal(false);
+    if (pic) {
+      formData.append("pic", pic);
+    } else {
+      formData.append("picOld", picUrl);
+    }
+    try {
+      await toast.promise(updateProfileAPI(formData), {
+        loading: "Đang cập nhật...",
+        success: (data) => {
+          dispatch(handleUpdateProfile());
+          setOpenModal(false);
+          return data.message;
+        },
+        error: (error) => {
+          return error?.data?.message || "Có lỗi xảy ra!";
+        },
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -191,6 +210,29 @@ const EditProfileModal = ({ openModal, setOpenModal }) => {
                 value={birth}
                 onChange={(e) => setBirth(e.target.value)}
               />
+              <div className="w-full pt-5">
+                <label
+                  htmlFor="gender"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Khóa học
+                </label>
+                <select
+                  id="course"
+                  name="course"
+                  className="p-3 border  block w-full pl-3 pr-10  text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  value={courseSelect}
+                  onChange={(e) => setCourseSelect(e.target.value)}
+                >
+                  <option value="">Chọn ngành học</option>
+                  {courses &&
+                    courses.map((course) => (
+                      <option key={course?._id} value={course?._id}>
+                        {course?.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
             <div className="relative p-4 md:p-5 rounded-t flex justify-end">
               <button

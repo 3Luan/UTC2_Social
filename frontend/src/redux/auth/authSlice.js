@@ -12,6 +12,7 @@ export const authSlice = createSlice({
     postsSaved: [],
     gender: "",
     birth: "",
+    course: "",
 
     isLoading: false,
     isInit: true,
@@ -33,6 +34,7 @@ export const authSlice = createSlice({
       state.postsSaved = [];
       state.gender = "";
       state.birth = "";
+      state.course = "";
 
       state.isLoading = false;
       state.isInit = false;
@@ -48,6 +50,7 @@ export const authSlice = createSlice({
       state.postsSaved = action.payload.user.postsSaved;
       state.gender = action.payload.user.gender;
       state.birth = action.payload.user.birth;
+      state.course = action.payload.user.course;
 
       state.isLoading = false;
       state.isInit = false;
@@ -63,6 +66,7 @@ export const authSlice = createSlice({
       state.postsSaved = [];
       state.gender = "";
       state.birth = "";
+      state.course = "";
 
       state.isLoading = true;
       state.isInit = false;
@@ -78,6 +82,7 @@ export const authSlice = createSlice({
       state.postsSaved = [];
       state.gender = "";
       state.birth = "";
+      state.course = "";
 
       state.isLoading = false;
       state.isInit = false;
@@ -93,6 +98,7 @@ export const authSlice = createSlice({
       state.postsSaved = action.payload.user.postsSaved;
       state.gender = action.payload.user.gender;
       state.birth = action.payload.user.birth;
+      state.course = action.payload.user.course;
 
       state.isLoading = false;
       state.isInit = false;
@@ -116,6 +122,7 @@ export const authSlice = createSlice({
       state.postsSaved = [];
       state.gender = "";
       state.birth = "";
+      state.course = "";
 
       state.isLoading = false;
       state.isInit = false;
@@ -126,6 +133,7 @@ export const authSlice = createSlice({
       state.pic = action.payload.user.pic;
       state.gender = action.payload.user.gender;
       state.birth = action.payload.user.birth;
+      state.course = action.payload.user.course;
     },
   },
 });

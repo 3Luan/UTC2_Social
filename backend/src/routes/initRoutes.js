@@ -9,6 +9,7 @@ const notificationRoute = require("./notificationRoute");
 const adminManagerRoute = require("./adminManagerRoute");
 const documentRoute = require("./documentRoute");
 const documentCategoryRoute = require("./documentCategoryRoute");
+const courseRoute = require("./courseRoute");
 
 let initRoutes = (app) => {
   app.use("/api/user", userRoute);
@@ -22,7 +23,9 @@ let initRoutes = (app) => {
 
   // Admin
   app.use("/api/adminManager", adminManagerRoute);
+
   app.use("/api/documentCategory", documentCategoryRoute);
+  app.use("/api/course", courseRoute);
 
   return app;
 };

@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema(
     followings: [{ type: String, ref: "users" }],
     followers: [{ type: String, ref: "users" }],
     postsSaved: [{ type: String, ref: "posts" }],
+    course: {
+      type: String,
+      ref: "courses",
+    },
   },
   { timestamps: true }
 );

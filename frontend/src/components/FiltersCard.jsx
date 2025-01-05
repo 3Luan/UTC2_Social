@@ -5,7 +5,7 @@ const FiltersCard = () => {
   return (
     <>
       <div>
-        <div className="bg-transparent flex flex-col items-center shadow-sm mx-6  border-b border-[#66666645]">
+        <div className="bg-white flex flex-col items-center shadow-sm mx-6  border-b border-[#66666645]">
           <div className="w-full flex items-center justify-between">
             <div className="flex flex-col justify-center">
               <p className="text-lg font-medium text-ascent-1">

@@ -14,8 +14,6 @@ let createDocument = async (req, res) => {
     const files = req.files?.files[0] || "";
     const userId = req.userId;
 
-    console.log(categoryName);
-
     if (!content || !title || !files || !categoryName) {
       throw {
         status: 400,

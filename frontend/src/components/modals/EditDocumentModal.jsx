@@ -133,7 +133,7 @@ const EditDocumentModal = ({
             return data?.message;
           },
           error: (error) => {
-            return error?.message;
+            return error?.data?.message;
           },
         });
       } catch (error) {}

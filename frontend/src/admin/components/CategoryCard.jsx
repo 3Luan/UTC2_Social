@@ -79,26 +79,26 @@ const CategoryCard = ({ category, addCategory, deleteCategory }) => {
       {/* Button ellipsis */}
       <>
         <>
-          <div className="flex flex-col items-end">
-            <button className=" px-3 rounded-md" onClick={toggleMenu}>
+          <div className="flex flex-col items-end relative">
+            <button className="px-3 rounded-md" onClick={toggleMenu}>
               <i className="fa-solid fa-ellipsis" />
             </button>
             {menuOpen && (
               <div
                 ref={menuRef}
-                className=" bg-white shadow-xl border rounded-md z-10 mr-2"
+                className=" bg-white shadow-xl border rounded-md z-10 mr-2 absolute w-32"
               >
                 <>
                   <button
                     onClick={() => onclickEdit()}
-                    className="block px-4 py-2 text-gray-800"
+                    className=" px-4 py-2 text-gray-800"
                   >
                     Chỉnh sửa
                   </button>
                 </>
 
                 <button
-                  className="block px-4 py-2 text-gray-800"
+                  className=" px-4 py-2 text-gray-800"
                   onClick={() => onclickDelete()}
                 >
                   Xóa

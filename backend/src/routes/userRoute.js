@@ -69,6 +69,13 @@ router.get(
   userController.getUserInfoById
 );
 
+router.post(
+  "/updateCourse",
+  checkJWT,
+  checkUserBanned,
+  userController.updateCourse
+);
+
 ////////////////////////Admin Manager//////////////////////
 router.get(
   "/getAllAdminUsers/:currentPage",

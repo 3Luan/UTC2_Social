@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { accessChatAPI } from "../../services/chatService";
 import { followUserAPI, unfollowUserAPI } from "../../services/userService";
+import { getCoursesAPI } from "../../services/documentCourseService";
 
 const UserProfile = ({ data }) => {
   moment.locale("vi");
@@ -17,6 +18,34 @@ const UserProfile = ({ data }) => {
   const navigate = useNavigate();
 
   const [selectedChat, setSelectedChat] = useState();
+
+  const [courses, setCourses] = useState([]);
+  const [nameCourse, setNameCourse] = useState("");
+
+  const getCourse = async () => {
+    try {
+      let data = await getCoursesAPI();
+      setCourses(data?.data);
+    } catch (error) {
+      setCourses([]);
+    }
+  };
+
+  useEffect(() => {
+    getCourseById();
+  }, [courses]);
+
+  const getCourseById = () => {
+    const course = courses.find((course) => course._id === data?.user?.course);
+
+    if (course) {
+      setNameCourse(course?.name);
+    }
+  };
+
+  useEffect(() => {
+    getCourse();
+  }, []);
 
   useEffect(() => {
     setIsFollow(data?.user?.followers.some((follow) => follow === auth.id));
@@ -116,7 +145,8 @@ const UserProfile = ({ data }) => {
               ) : (
                 <>Khác</>
               )}{" "}
-              • {moment(data?.user?.birth).format("L")}
+              • {moment(data?.user?.birth).format("L")}{" "}
+              {nameCourse ? `• Sinh viên ${nameCourse}` : ""}
             </h2>
           </div>
           <div className="flex bg-transparent my-2    ">

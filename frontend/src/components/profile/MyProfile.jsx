@@ -9,6 +9,7 @@ import Loading from "../Loading";
 import moment from "moment";
 import "moment/locale/vi";
 import EditPasswordModal from "../modals/EditPasswordModal";
+import { getCoursesAPI } from "../../services/documentCourseService";
 
 const MyProfile = ({ data }) => {
   moment.locale("vi");
@@ -25,6 +26,32 @@ const MyProfile = ({ data }) => {
   const [currentPage, setCurrentPage] = useState();
   const [count, setCount] = useState();
   const [img, setImg] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [nameCourse, setNameCourse] = useState("");
+
+  const getCourse = async () => {
+    try {
+      let data = await getCoursesAPI();
+      setCourses(data?.data);
+    } catch (error) {
+      setCourses([]);
+    }
+  };
+
+  useEffect(() => {
+    getCourseById();
+  }, [courses, auth]);
+
+  const getCourseById = () => {
+    const course = courses.find((course) => course._id === auth?.course);
+    if (course) {
+      setNameCourse(course.name);
+    }
+  };
+
+  useEffect(() => {
+    getCourse();
+  }, []);
 
   const addPost = (data) => {
     setPosts((posts) => [data, ...posts]);
@@ -77,7 +104,7 @@ const MyProfile = ({ data }) => {
 
   return (
     <div className="flex-1 h-full flex flex-col gap-2 overflow-y-auto rounded-lg bg-white">
-      <div className="w-full h-full flex pt-4 pb-4 border-b bg-white duration-200 easy-in-out">
+      <div className="w-full h-48 flex pt-4 pb-4 border-b bg-white duration-200 easy-in-out">
         <div className="flex justify-center px-5  ">
           <img
             className="h-36 w-36 bg-white p-2 rounded-full"
@@ -101,7 +128,7 @@ const MyProfile = ({ data }) => {
               ) : (
                 <>Khác</>
               )}{" "}
-              • {moment(birth).format("L")}
+              • {moment(birth).format("L")} • Sinh viên {nameCourse}
             </h2>
           </div>
           <div className="flex bg-transparent my-2">
