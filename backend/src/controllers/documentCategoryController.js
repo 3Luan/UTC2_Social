@@ -80,9 +80,11 @@ let editCategory = async (req, res) => {
 
     await category.updateOne({ name: name });
 
+    category = await DocumentCategoryModel.findById(idCategory);
+
     res.status(200).json({
       message: "Sửa danh mục thành công",
-      data: name,
+      data: category,
     });
   } catch (error) {
     res.status(error?.status || 500).json({
@@ -131,9 +133,8 @@ let deleteCategory = async (req, res) => {
   }
 };
 
-let getCategorys = async (req, res) => {
+let getCategories = async (req, res) => {
   try {
-    const currentPage = req.params.currentPage || 1;
     const keyword = req.params.keyword || null;
 
     let query = {
@@ -145,17 +146,11 @@ let getCategorys = async (req, res) => {
       query.title = regex; // Thêm điều kiện tìm kiếm
     }
 
-    // Đếm số lượng
-    const count = await DocumentCategoryModel.countDocuments(query);
+    const categories = await DocumentCategoryModel.find(query).sort({
+      createdAt: -1,
+    });
 
-    const offset = 10 * (currentPage - 1);
-
-    const categorys = await DocumentCategoryModel.find(query)
-      .limit(10)
-      .skip(offset)
-      .sort({ createdAt: -1 });
-
-    if (!categorys || categorys.length === 0) {
+    if (!categories || categories.length === 0) {
       throw {
         status: 404,
         message: "Không có danh mục nào",
@@ -164,10 +159,7 @@ let getCategorys = async (req, res) => {
 
     res.status(200).json({
       message: "Lấy danh mục thành công",
-      data: {
-        count,
-        categorys,
-      },
+      data: categories,
     });
   } catch (error) {
     res.status(error?.status || 500).json({
@@ -180,5 +172,5 @@ module.exports = {
   addCategory,
   editCategory,
   deleteCategory,
-  getCategorys,
+  getCategories,
 };

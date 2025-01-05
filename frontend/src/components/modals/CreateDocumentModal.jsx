@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import Loading from "../Loading";
 import { useLocation } from "react-router-dom";
 import { createDocumentAPI } from "../../services/documentService";
+import { getCategoriesAPI } from "../../services/documentCategoryService";
 
 const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
   const auth = useSelector((state) => state.auth);
@@ -23,6 +24,22 @@ const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
   const [files, setFiles] = useState();
   const quillRef = useRef();
   const location = useLocation();
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const getCategory = async () => {
+    try {
+      let data = await getCategoriesAPI(1);
+
+      setCategories(data?.data);
+    } catch (error) {
+      setCategories([]);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -40,12 +57,15 @@ const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
       return toast.error("Nội dung không được bỏ trống!");
     } else if (!files) {
       return toast.error("Hãy thêm file tài liệu!");
+    } else if (!selectedCategory) {
+      return toast.error("Hãy chọn danh mục!");
     } else {
       setLoadCreateDocument(true);
 
       const formData = new FormData();
       formData.append("title", title);
       formData.append("content", content);
+      formData.append("categoryName", selectedCategory);
 
       formData.append("files", files);
 
@@ -67,16 +87,22 @@ const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
             setFiles([]);
 
             handleCloseModal();
+            console.log(data);
+
             return data.message;
           },
           error: (error) => {
-            return error.message;
+            return error?.data?.message;
           },
         });
       } catch (error) {}
 
       setLoadCreateDocument(false);
     }
+  };
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
   };
 
   return (
@@ -123,8 +149,8 @@ const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
                   placeholder="Nội dung tài liệu..."
                 />
 
-                <div className="flex gap-3 items-center my-3">
-                  {/* Thêm files */}
+                <div className="flex gap-4 items-center my-3">
+                  {/* Nút thêm tệp */}
                   <label className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer">
                     <input
                       type="file"
@@ -135,6 +161,22 @@ const CreateDocumentModal = ({ openModal, setOpenModal, addDocument }) => {
                     <i className="fa-solid fa-upload"></i>
                     <span>Thêm tệp</span>
                   </label>
+
+                  {/* Chọn danh mục */}
+                  <select
+                    id="category-select"
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    className="mt-1 block w-40 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    <option value="">Chọn danh mục</option>
+                    {categories &&
+                      categories?.map((category) => (
+                        <option key={category?._id} value={category?.name}>
+                          {category?.name}
+                        </option>
+                      ))}
+                  </select>
                 </div>
 
                 {/* Hiển thị danh sách các tệpflex flex-wrap */}

@@ -21,13 +21,7 @@ router.post(
   documentCategoryController.deleteCategory
 );
 
-router.get(
-  "/getCategorys/:currentPage",
-  documentCategoryController.getCategorys
-);
-router.get(
-  "/getCategorys/:currentPage/:keyword",
-  documentCategoryController.getCategorys
-);
+router.get("/getCategories", documentCategoryController.getCategories);
+router.get("/getCategories/:keyword", documentCategoryController.getCategories);
 
 module.exports = router;

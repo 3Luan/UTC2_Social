@@ -6,17 +6,31 @@ const { v4: uuidv4 } = require("uuid");
 const fileUploadPath = path.join("uploads/files");
 const imageUploadPath = path.join("uploads/images");
 const NotificationModel = require("../models/notificationModel");
+const DocumentCategoryModel = require("../models/documentCategoryModel");
 
 let createDocument = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, categoryName } = req.body;
     const files = req.files?.files[0] || "";
     const userId = req.userId;
 
-    if (!content || !title || !files) {
+    console.log(categoryName);
+
+    if (!content || !title || !files || !categoryName) {
       throw {
         status: 400,
         message: "Không được bỏ trống thông tin",
+      };
+    }
+
+    const category = await DocumentCategoryModel.findOne({
+      name: categoryName,
+    });
+
+    if (!category || !category?.isActive) {
+      throw {
+        status: 401,
+        message: "Danh mục không tồn tại",
       };
     }
 
@@ -41,6 +55,7 @@ let createDocument = async (req, res) => {
     if (user.isAdmin) {
       newDocument = await postModel.create({
         user: userId,
+        category: category?._id,
         title,
         content,
         files: fileData,
@@ -70,6 +85,7 @@ let createDocument = async (req, res) => {
     } else {
       newDocument = await postModel.create({
         user: userId,
+        category: category?._id,
         title,
         content,
         files: fileData,
@@ -97,15 +113,32 @@ let createDocument = async (req, res) => {
 
 const updateDocument = async (req, res) => {
   try {
-    const { title, content, documentId, fileOld } = req.body;
+    const { title, content, documentId, fileOld, categoryName } = req.body;
     const files = req.files?.files || null;
     const userId = req.userId;
 
     // Kiểm tra xem nội dung và tiêu đề có được cung cấp không
-    if (!documentId || !content || !title || (!files && !fileOld)) {
+    if (
+      !documentId ||
+      !content ||
+      !title ||
+      (!files && !fileOld) ||
+      !categoryName
+    ) {
       throw {
         status: 400,
         message: "Không được bỏ trống thông tin",
+      };
+    }
+
+    const category = await DocumentCategoryModel.findOne({
+      name: categoryName,
+    });
+
+    if (!category || !category?.isActive) {
+      throw {
+        status: 401,
+        message: "Danh mục không tồn tại",
       };
     }
 
@@ -135,6 +168,7 @@ const updateDocument = async (req, res) => {
         user: userId,
         title,
         content,
+        category: category?._id,
         isDisplay: false,
       };
     } else {
@@ -450,7 +484,12 @@ let deleteDocument = async (req, res) => {
 let getDocuments = async (req, res) => {
   try {
     const currentPage = req.params.currentPage || 1;
-    const keyword = req.params.keyword || null;
+    let keyword = req.params.keyword || null;
+    const categoryId = req.params.categoryId || null;
+
+    if (keyword === "null") {
+      keyword = null;
+    }
 
     let query = {
       isDisplay: true,
@@ -461,6 +500,10 @@ let getDocuments = async (req, res) => {
     if (keyword) {
       const regex = new RegExp(keyword, "i"); // Tạo biểu thức chính quy từ keyword
       query.title = regex; // Thêm điều kiện tìm kiếm tiêu đề
+    }
+
+    if (categoryId) {
+      query.category = categoryId; // Thêm điều kiện tìm kiếm tiêu đề
     }
 
     const count = await postModel.countDocuments(query);
@@ -501,6 +544,11 @@ let getHistoryDocuments = async (req, res) => {
     const currentPage = req.params.currentPage || 1;
     const keyword = req.params.keyword || null;
     const userId = req.userId;
+    const categoryId = req.params.categoryId || null;
+
+    if (keyword === "null") {
+      keyword = null;
+    }
 
     let query = {
       isDisplay: true,
@@ -512,6 +560,10 @@ let getHistoryDocuments = async (req, res) => {
     if (keyword) {
       const regex = new RegExp(keyword, "i"); // Tạo biểu thức chính quy từ keyword
       query.title = regex; // Thêm điều kiện tìm kiếm tiêu đề
+    }
+
+    if (categoryId) {
+      query.category = categoryId; // Thêm điều kiện tìm kiếm tiêu đề
     }
 
     const count = await postModel.countDocuments(query);
@@ -553,6 +605,11 @@ let getUnApprovedDocuments = async (req, res) => {
     const keyword = req.params.keyword || null;
     const userId = req.userId;
     let user = await userModel.findById(userId);
+    const categoryId = req.params.categoryId || null;
+
+    if (keyword === "null") {
+      keyword = null;
+    }
 
     let query = {
       isDisplay: false,
@@ -564,7 +621,9 @@ let getUnApprovedDocuments = async (req, res) => {
       const regex = new RegExp(keyword, "i"); // Tạo biểu thức chính quy từ keyword
       query.title = regex; // Thêm điều kiện tìm kiếm tiêu đề
     }
-
+    if (categoryId) {
+      query.category = categoryId; // Thêm điều kiện tìm kiếm tiêu đề
+    }
     let documents, count;
 
     if (user.isAdmin) {

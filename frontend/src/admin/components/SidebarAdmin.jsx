@@ -41,6 +41,14 @@ const SidebarAdmin = () => {
           >
             <span>Bình luận, phản hồi</span>
           </Link>
+
+          <div className="w-full flex items-center justify-between border-b py-2 pt-4 border-[#66666645]"></div>
+          <Link
+            to="/admin/danh-muc-tai-lieu"
+            className="w-full flex items-center  gap-4 py-2 cursor-pointer h-full"
+          >
+            <span>Danh mục tài liệu</span>
+          </Link>
         </div>
       </div>
     </div>

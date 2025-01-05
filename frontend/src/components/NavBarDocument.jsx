@@ -6,6 +6,9 @@ import CreateDocumentModal from "./modals/CreateDocumentModal";
 import TextInput from "./TextInput";
 import CustomButton from "./CustomButton";
 import {
+  filterDocumentAPI,
+  filterHistoryDocumentAPI,
+  filterUnapprovedDocumentAPI,
   getDocumentsAPI,
   getHistoryDocumentsAPI,
   getUnapprovedDocumentsAPI,
@@ -13,6 +16,7 @@ import {
   searchHistoryDocumentAPI,
   searchUnApprovedDocumentAPI,
 } from "../services/documentService";
+import { getCategoriesAPI } from "../services/documentCategoryService";
 
 const NavBarDocument = ({
   addDocument,
@@ -21,6 +25,8 @@ const NavBarDocument = ({
   setQuery,
   setCount,
   setCurrentPage,
+  setSelectedCategory,
+  selectedCategory,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef();
@@ -28,6 +34,25 @@ const NavBarDocument = ({
   const [openModalCreateDocument, setOpenModalCreateDocument] = useState(false);
   const location = useLocation();
   const [keyword, setKeyword] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  const getCategory = async () => {
+    try {
+      let data = await getCategoriesAPI(1);
+
+      setCategories(data?.data);
+    } catch (error) {
+      setCategories([]);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  useEffect(() => {
+    getData();
+  }, [selectedCategory]);
 
   useEffect(() => {
     setKeyword("");
@@ -63,19 +88,43 @@ const NavBarDocument = ({
 
     try {
       let data;
-      if (location.pathname === "/tai-lieu") {
-        data = keyword
-          ? await searchDocumentAPI(1, keyword)
-          : (data = await getDocumentsAPI(1));
-      } else if (location.pathname === "/tai-lieu/chua-duyet") {
-        data = keyword
-          ? await searchUnApprovedDocumentAPI(1, keyword)
-          : (data = await getUnapprovedDocumentsAPI(1));
-      } else if (location.pathname === "/tai-lieu/lich-su") {
-        data = keyword
-          ? await searchHistoryDocumentAPI(1, keyword)
-          : (data = await getHistoryDocumentsAPI(1));
+
+      if (selectedCategory) {
+        if (location.pathname === "/tai-lieu") {
+          data = await filterDocumentAPI(
+            1,
+            keyword ? keyword : "null",
+            selectedCategory
+          );
+        } else if (location.pathname === "/tai-lieu/chua-duyet") {
+          data = await filterUnapprovedDocumentAPI(
+            1,
+            keyword ? keyword : "null",
+            selectedCategory
+          );
+        } else if (location.pathname === "/tai-lieu/lich-su") {
+          data = await filterHistoryDocumentAPI(
+            1,
+            keyword ? keyword : "null",
+            selectedCategory
+          );
+        }
+      } else {
+        if (location.pathname === "/tai-lieu") {
+          data = keyword
+            ? await searchDocumentAPI(1, keyword)
+            : (data = await getDocumentsAPI(1));
+        } else if (location.pathname === "/tai-lieu/chua-duyet") {
+          data = keyword
+            ? await searchUnApprovedDocumentAPI(1, keyword)
+            : (data = await getUnapprovedDocumentsAPI(1));
+        } else if (location.pathname === "/tai-lieu/lich-su") {
+          data = keyword
+            ? await searchHistoryDocumentAPI(1, keyword)
+            : (data = await getHistoryDocumentsAPI(1));
+        }
       }
+
       setDocuments(data?.data?.documents);
       setCount(data?.data?.count);
     } catch (error) {
@@ -90,6 +139,12 @@ const NavBarDocument = ({
       getData();
     }
   };
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  console.log("categories", categories);
 
   return (
     <div className="bg-white m-3 rounded-xl  flex flex-col items-center">
@@ -126,6 +181,22 @@ const NavBarDocument = ({
               >
                 <i class="fa-sharp fa-solid fa-circle-plus text-xl"></i>
               </button>
+
+              <div>
+                <select
+                  id="category-select"
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                  className=" block w-24 ml-3 px-3 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option value="">Tất cả</option>
+                  {categories?.map((category) => (
+                    <option key={category?._id} value={category?._id}>
+                      {category?.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </>
           )}
         </div>

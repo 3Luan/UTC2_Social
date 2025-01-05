@@ -18,6 +18,7 @@ import {
   getDocumentUnApprovedDetailByIdAPI,
   updateDocumentAPI,
 } from "../../services/documentService";
+import { getCategoriesAPI } from "../../services/documentCategoryService";
 
 const EditDocumentModal = ({
   openModal,
@@ -34,6 +35,22 @@ const EditDocumentModal = ({
   const [files, setFiles] = useState();
   const quillRef = useRef();
   const location = useLocation();
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const getCategory = async () => {
+    try {
+      let data = await getCategoriesAPI(1);
+
+      setCategories(data?.data);
+    } catch (error) {
+      setCategories([]);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
 
   useEffect(() => {
     if (openModal && documentId) {
@@ -46,6 +63,10 @@ const EditDocumentModal = ({
       setTitle(document?.title);
       setContent(document?.content);
       setFiles(document?.files[0]);
+      const nameCategory = categories.find((c) => {
+        return document?.category?.[0] && c._id === document.category[0];
+      });
+      setSelectedCategory(nameCategory?.name);
     }
   }, [document]);
 
@@ -70,6 +91,8 @@ const EditDocumentModal = ({
       return toast.error("Nội dung không được bỏ trống!");
     } else if (!files) {
       return toast.error("Hãy thêm file tài liệu!");
+    } else if (!selectedCategory) {
+      return toast.error("Hãy chọn danh mục!");
     } else {
       setLoadCreateDocument(true);
 
@@ -77,6 +100,8 @@ const EditDocumentModal = ({
       formData.append("title", title);
       formData.append("content", content);
       formData.append("documentId", documentId);
+      formData.append("categoryName", selectedCategory);
+
       if (files?._id) {
         formData.append("fileOld", files?._id);
       } else {
@@ -115,6 +140,10 @@ const EditDocumentModal = ({
 
       setLoadCreateDocument(false);
     }
+  };
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
   };
 
   return (
@@ -161,7 +190,7 @@ const EditDocumentModal = ({
                   placeholder="Nội dung tài liệu..."
                 />
 
-                <div className="flex gap-3 items-center my-3">
+                <div className="flex gap-4 items-center my-3">
                   {/* Thêm files */}
                   <label className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer">
                     <input
@@ -173,6 +202,21 @@ const EditDocumentModal = ({
                     <i className="fa-solid fa-upload"></i>
                     <span>Thêm tệp</span>
                   </label>
+                  {/* Chọn danh mục */}
+                  <select
+                    id="category-select"
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    className="mt-1 block w-40 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    <option value="">Chọn danh mục</option>
+                    {categories &&
+                      categories?.map((category) => (
+                        <option key={category?._id} value={category?.name}>
+                          {category?.name}
+                        </option>
+                      ))}
+                  </select>
                 </div>
 
                 {/* Hiển thị danh sách các tệpflex flex-wrap */}

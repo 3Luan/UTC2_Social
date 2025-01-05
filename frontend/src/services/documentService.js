@@ -24,6 +24,28 @@ export const searchDocumentAPI = (currentPage, keyword) => {
   return backendApi.get(`/api/document/getDocuments/${currentPage}/${keyword}`);
 };
 
+export const filterDocumentAPI = (currentPage, keyword, categoryId) => {
+  return backendApi.get(
+    `/api/document/getDocuments/${currentPage}/${keyword}/${categoryId}`
+  );
+};
+
+export const filterHistoryDocumentAPI = (currentPage, keyword, categoryId) => {
+  return backendApi.get(
+    `/api/document/getHistoryDocuments/${currentPage}/${keyword}/${categoryId}`
+  );
+};
+
+export const filterUnapprovedDocumentAPI = (
+  currentPage,
+  keyword,
+  categoryId
+) => {
+  return backendApi.get(
+    `/api/document/getUnapprovedDocuments/${currentPage}/${keyword}/${categoryId}`
+  );
+};
+
 export const searchHistoryDocumentAPI = (currentPage, keyword) => {
   return backendApi.get(
     `/api/document/getHistoryDocuments/${currentPage}/${keyword}`

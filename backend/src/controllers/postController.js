@@ -9,7 +9,7 @@ const imageUploadPath = path.join("uploads/images");
 
 let createPost = async (req, res) => {
   try {
-    const { title, contentz } = req.body;
+    const { title, content } = req.body;
     const images = req.files?.images || [];
     const files = req.files?.files || [];
     const userId = req.userId;

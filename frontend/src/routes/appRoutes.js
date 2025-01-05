@@ -30,6 +30,7 @@ import StatiticsPost from "../admin/components/StatiticsPost";
 import PostDeleteDetails from "../admin/components/PostDeleteDetails";
 import DocumentDeleteDetails from "../admin/components/DocumentDeleteDetails";
 import Statistics from "../admin/pages/Statistics";
+import Category from "../admin/pages/Category";
 
 const AppRoutes = () => {
   return (
@@ -266,6 +267,15 @@ const AppRoutes = () => {
           element={
             <PrivateAdminRoutes>
               <DocumentDeleteDetails />
+            </PrivateAdminRoutes>
+          }
+        />
+
+        <Route
+          path="/admin/danh-muc-tai-lieu"
+          element={
+            <PrivateAdminRoutes>
+              <Category />
             </PrivateAdminRoutes>
           }
         />

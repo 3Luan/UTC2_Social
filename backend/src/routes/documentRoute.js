@@ -28,8 +28,14 @@ router.post(
 );
 
 router.get("/getDocuments/:currentPage", documentController.getDocuments);
+
 router.get(
   "/getDocuments/:currentPage/:keyword",
+  documentController.getDocuments
+);
+
+router.get(
+  "/getDocuments/:currentPage/:keyword/:categoryId",
   documentController.getDocuments
 );
 
@@ -46,6 +52,10 @@ router.get(
   documentController.getHistoryDocuments
 );
 router.get(
+  "/getHistoryDocuments/:currentPage/:keyword/:categoryId",
+  documentController.getHistoryDocuments
+);
+router.get(
   "/getUnApprovedDocuments/:currentPage",
   checkJWT,
   checkUserBanned,
@@ -57,7 +67,10 @@ router.get(
   checkUserBanned,
   documentController.getUnApprovedDocuments
 );
-
+router.get(
+  "/getUnApprovedDocuments/:currentPage/:keyword/:categoryId",
+  documentController.getUnApprovedDocuments
+);
 router.get(
   "/getDocumentDetailById/:documentId",
   documentController.getDocumentDetailById

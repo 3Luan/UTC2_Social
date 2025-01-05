@@ -4,6 +4,9 @@ import Sidebar from "../components/Sidebar";
 import DocumentCard from "../components/DocumentCard";
 import NavBarDocument from "../components/NavBarDocument";
 import {
+  filterDocumentAPI,
+  filterHistoryDocumentAPI,
+  filterUnapprovedDocumentAPI,
   getDocumentsAPI,
   getHistoryDocumentsAPI,
   getUnapprovedDocumentsAPI,
@@ -23,6 +26,7 @@ const Document = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const addDocument = (data) => {
     if (data.documents) {
@@ -51,18 +55,45 @@ const Document = () => {
 
     try {
       let data;
-      if (location.pathname === "/tai-lieu") {
-        data = query
-          ? await searchDocumentAPI(selectedPage.selected + 1, query)
-          : (data = await getDocumentsAPI(selectedPage.selected + 1));
-      } else if (location.pathname === "/tai-lieu/chua-duyet") {
-        data = query
-          ? await searchUnApprovedDocumentAPI(selectedPage.selected + 1, query)
-          : (data = await getUnapprovedDocumentsAPI(selectedPage.selected + 1));
-      } else if (location.pathname === "/tai-lieu/lich-su") {
-        data = query
-          ? await searchHistoryDocumentAPI(selectedPage.selected + 1, query)
-          : (data = await getHistoryDocumentsAPI(selectedPage.selected + 1));
+      if (selectedCategory) {
+        if (location.pathname === "/tai-lieu") {
+          data = await filterDocumentAPI(
+            selectedPage.selected + 1,
+            query ? query : "null",
+            selectedCategory
+          );
+        } else if (location.pathname === "/tai-lieu/chua-duyet") {
+          data = await filterUnapprovedDocumentAPI(
+            selectedPage.selected + 1,
+            query ? query : "null",
+            selectedCategory
+          );
+        } else if (location.pathname === "/tai-lieu/lich-su") {
+          data = await filterHistoryDocumentAPI(
+            selectedPage.selected + 1,
+            query ? query : "null",
+            selectedCategory
+          );
+        }
+      } else {
+        if (location.pathname === "/tai-lieu") {
+          data = query
+            ? await searchDocumentAPI(selectedPage.selected + 1, query)
+            : (data = await getDocumentsAPI(selectedPage.selected + 1));
+        } else if (location.pathname === "/tai-lieu/chua-duyet") {
+          data = query
+            ? await searchUnApprovedDocumentAPI(
+                selectedPage.selected + 1,
+                query
+              )
+            : (data = await getUnapprovedDocumentsAPI(
+                selectedPage.selected + 1
+              ));
+        } else if (location.pathname === "/tai-lieu/lich-su") {
+          data = query
+            ? await searchHistoryDocumentAPI(selectedPage.selected + 1, query)
+            : (data = await getHistoryDocumentsAPI(selectedPage.selected + 1));
+        }
       }
 
       setDocuments(data?.data?.documents);
@@ -94,6 +125,8 @@ const Document = () => {
             setCount={setCount}
             setCurrentPage={setCurrentPage}
             queryy={query}
+            setSelectedCategory={setSelectedCategory}
+            selectedCategory={selectedCategory}
           />
           {/* {location.pathname === "/tai-lieu" ? (
             <> */}
@@ -110,14 +143,25 @@ const Document = () => {
               ) : (
                 <>
                   {documents?.map((document) => {
-                    return (
-                      <DocumentCard
-                        doc={document}
-                        link={`/tai-lieu`}
-                        deleteDocument={deleteDocument}
-                        addDocument={addDocument}
-                      />
-                    );
+                    if (location.pathname === "/tai-lieu/chua-duyet") {
+                      return (
+                        <DocumentCard
+                          doc={document}
+                          link={`/tai-lieu-chua-duyet`}
+                          deleteDocument={deleteDocument}
+                          addDocument={addDocument}
+                        />
+                      );
+                    } else {
+                      return (
+                        <DocumentCard
+                          doc={document}
+                          link={`/tai-lieu`}
+                          deleteDocument={deleteDocument}
+                          addDocument={addDocument}
+                        />
+                      );
+                    }
                   })}
                 </>
               )}
