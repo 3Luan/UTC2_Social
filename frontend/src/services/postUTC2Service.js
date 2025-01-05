@@ -1,4 +1,4 @@
-import utc2Api from "../api/UTC2Api";
+import utc2Api from "../api/utc2Api";
 
 export const getPostUTC2API = (currentPage) => {
   return utc2Api.get("/post", {
