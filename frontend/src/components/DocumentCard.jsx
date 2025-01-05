@@ -46,7 +46,7 @@ const DocumentCard = ({ doc, link, deleteDocument, addDocument }) => {
     setPic(
       doc?.user?.pic?.includes("googleusercontent.com")
         ? doc?.user?.pic
-        : `http://localhost:3001/${doc?.user?.pic}`
+        : `${process.env.REACT_APP_URL_BACKEND}/${doc?.user?.pic}`
     );
   }, [doc?.user?.pic]);
 

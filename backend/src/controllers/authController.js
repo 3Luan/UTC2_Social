@@ -502,7 +502,7 @@ const loginWithGoogleCallback = (req, res, next) => {
       res.redirect(`${process.env.URL_FRONTEND}`);
     } catch (error) {
       console.log(error);
-      res.redirect("http://localhost:3001/api/auth/google");
+      res.redirect(`${process.env.URL_BACKEND}/api/auth/google`);
     }
   })(req, res, next);
 };

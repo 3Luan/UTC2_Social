@@ -45,7 +45,7 @@ const EditProfileModal = ({ openModal, setOpenModal }) => {
       setPicUrl(
         auth?.pic?.includes("googleusercontent.com")
           ? auth?.pic
-          : `http://localhost:3001/${auth?.pic}`
+          : `${process.env.REACT_APP_URL_BACKEND}/${auth?.pic}`
       );
     }
   }, [auth]);
@@ -70,7 +70,7 @@ const EditProfileModal = ({ openModal, setOpenModal }) => {
       setPicUrl(
         auth?.pic?.includes("googleusercontent.com")
           ? auth?.pic
-          : `http://localhost:3001/${auth?.pic}`
+          : `${process.env.REACT_APP_URL_BACKEND}/${auth?.pic}`
       );
     }
   };

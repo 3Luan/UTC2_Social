@@ -10,7 +10,7 @@ const CommentCardAdmin = ({ comment }) => {
     setPic(
       comment?.user?.pic?.includes("googleusercontent.com")
         ? comment?.user?.pic
-        : `http://localhost:3001/${comment?.user?.pic}`
+        : `${process.env.REACT_APP_URL_BACKEND}/${comment?.user?.pic}`
     );
   }, [comment?.user?.pic]);
 

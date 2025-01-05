@@ -72,7 +72,7 @@ const PostDeleteDetails = () => {
                               <img
                                 className="w-20 h-auto w-full"
                                 alt={`Image`}
-                                src={`http://localhost:3001/${image?.path}`}
+                                src={`${process.env.REACT_APP_URL_BACKEND}/${image?.path}`}
                               />
                             </div>
                           );
@@ -85,7 +85,7 @@ const PostDeleteDetails = () => {
                         {data?.files.map((file, index) => (
                           <div key={index} className="file-item">
                             <a
-                              href={`http://localhost:3001/${file?.path}`}
+                              href={`${process.env.REACT_APP_URL_BACKEND}/${file?.path}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >

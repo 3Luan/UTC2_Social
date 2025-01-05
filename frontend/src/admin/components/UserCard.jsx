@@ -25,7 +25,7 @@ const UserCard = ({ data, tabActive }) => {
     setPic(
       data?.pic?.includes("googleusercontent.com")
         ? data?.pic
-        : `http://localhost:3001/${data?.pic}`
+        : `${process.env.REACT_APP_URL_BACKEND}/${data?.pic}`
     );
 
     const handleClickOutside = (event) => {

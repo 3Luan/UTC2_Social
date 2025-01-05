@@ -55,7 +55,7 @@ const UserProfile = ({ data }) => {
     setPic(
       data?.user?.pic?.includes("googleusercontent.com")
         ? data?.user?.pic
-        : `http://localhost:3001/${data?.user?.pic}`
+        : `${process.env.REACT_APP_URL_BACKEND}/${data?.user?.pic}`
     );
   }, [data?.user?.pic]);
 

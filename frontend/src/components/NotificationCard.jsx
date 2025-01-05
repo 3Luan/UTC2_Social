@@ -15,7 +15,7 @@ const NotificationCard = ({ notification, handleClosePopup, setCountNoti }) => {
     setPic(
       notification?.sender?.pic?.includes("googleusercontent.com")
         ? notification?.sender?.pic
-        : `http://localhost:3001/${notification?.sender?.pic}`
+        : `${process.env.REACT_APP_URL_BACKEND}/${notification?.sender?.pic}`
     );
   }, []);
 

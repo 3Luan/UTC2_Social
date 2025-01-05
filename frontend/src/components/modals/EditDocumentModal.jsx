@@ -227,7 +227,7 @@ const EditDocumentModal = ({
                       <a
                         href={
                           files?._id
-                            ? `http://localhost:3001/${files?.path}`
+                            ? `${process.env.REACT_APP_URL_BACKEND}/${files?.path}`
                             : URL.createObjectURL(files)
                         }
                         target="_blank"

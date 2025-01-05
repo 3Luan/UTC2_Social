@@ -26,7 +26,7 @@ const PostCardAdmin = ({ post, link }) => {
     setPic(
       post?.user?.pic?.includes("googleusercontent.com")
         ? post?.user?.pic
-        : `http://localhost:3001/${post?.user?.pic}`
+        : `${process.env.REACT_APP_URL_BACKEND}/${post?.user?.pic}`
     );
   }, [post?.user?.pic]);
 

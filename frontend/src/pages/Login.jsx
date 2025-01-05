@@ -39,7 +39,10 @@ const Login = () => {
   };
 
   const onclickLoginWithGoogle = async () => {
-    window.open("http://localhost:3001/api/auth/google", "_self");
+    window.open(
+      `${process.env.REACT_APP_URL_BACKEND}/api/auth/google`,
+      "_self"
+    );
   };
 
   return (
