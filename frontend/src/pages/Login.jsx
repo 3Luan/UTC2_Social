@@ -34,7 +34,7 @@ const Login = () => {
         toast.error("Email không đúng định dạng");
       }
     } else {
-      toast.error("Hãy nhập đủ thông tin!");
+      toast.error("Hãy nhập đủ thông tin");
     }
   };
 
